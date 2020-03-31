@@ -69,29 +69,14 @@ func main() {
 	//
 	// INITIALIZE EMAIL SERVICE
 	//
-	redisHost := os.Getenv("REDIS_HOST")
-	if redisHost == "" {
-		err := errors.New("invalid REDIS_HOST env value")
-		log.Fatal(err)
-	}
-	redisPort := os.Getenv("REDIS_PORT")
-	if redisPort == "" {
-		err := errors.New("invalid REDIS_PORT env value")
-		log.Fatal(err)
-	}
-	redisPassword := os.Getenv("REDIS_PASSWORD")
-	redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
-	redisDatabase := os.Getenv("REDIS_DATABASE")
-	if redisDatabase == "" {
-		err := errors.New("invalid REDIS_DATABASE env value")
+	redisURL := os.Getenv("REDIS_URL")
+	if redisURL == "" {
+		err := errors.New("invalid REDIS_URL env value")
 		log.Fatal(err)
 	}
 
 	log.Println("============================")
-	log.Println("REDIS_HOST", redisHost)
-	log.Println("REDIS_PORT", redisPort)
-	log.Println("REDIS_PASSWORD", redisPassword)
-	log.Println("REDIS_DATABASE", redisDatabase)
+	log.Println("REDIS_URL", redisURL)
 	log.Println("============================")
 
 	providersEnv := os.Getenv("PROVIDERS")
@@ -113,7 +98,7 @@ func main() {
 		log.Fatal(err)
 	}
 	go func() {
-		email.Run(emailAddr, redisAddr, redisPassword, redisDatabase, providers)
+		email.Run(emailAddr, redisURL, providers)
 	}()
 
 	//
