@@ -19,4 +19,4 @@ COPY database/migrations/* /src/${SVC}/migrations/
 EXPOSE 5000
 
 # Run service
-CMD ["/bin/sh", "-l", "-c", "wait-db && cd /src/$SVC/migrations/ && goose postgres ${POSTGRES_DSN} up && $SVC"]
+CMD ["/bin/sh", "-l", "-c", "wait-db && cd /src/$SVC/migrations/ && goose postgres ${DATABASE_URL} up && $SVC"]

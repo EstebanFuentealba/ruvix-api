@@ -19,7 +19,7 @@ REGISTRY_URL=$(DOCKER_USER)
 #
 HOST=localhost
 PORT=5000
-POSTGRES_DSN=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
+DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
 
 #
 # AUTH SERVICE
@@ -53,7 +53,7 @@ run r:
 	@echo "[running] Running service..."
 	@HOST=$(HOST) \
 	PORT=$(PORT) \
-	POSTGRES_DSN=$(POSTGRES_DSN) \
+	DATABASE_URL=$(DATABASE_URL) \
 	JWT_SECRET=$(JWT_SECRET) \
 	USERS_HOST=$(USERS_HOST) \
 	USERS_PORT=$(USERS_PORT) \

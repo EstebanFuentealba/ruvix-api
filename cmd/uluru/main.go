@@ -32,9 +32,9 @@ func main() {
 	//
 	// INITIALIZE ULURU
 	//
-	postgresDSN := os.Getenv("POSTGRES_DSN")
+	postgresDSN := os.Getenv("DATABASE_URL")
 	if postgresDSN == "" {
-		log.Fatalln("missing env variable POSTGRES_DSN")
+		log.Fatalln("missing env variable DATABASE_URL")
 	}
 	host := os.Getenv("HOST")
 	if host == "" {
