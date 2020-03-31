@@ -17,7 +17,7 @@ REGISTRY_URL=$(DOCKER_USER)
 #
 # ULURU SERVICE
 #
-HOST=localhost
+HOST=0.0.0.0
 PORT=5000
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
 
@@ -41,6 +41,7 @@ EMAIL_HOST=localhost
 EMAIL_PORT=5030
 REDIS_HOST=localhost
 REDIS_PORT=6379
+REDIS_PASSWORD=
 REDIS_DATABASE=1
 PROVIDERS=sendgrid
 PROVIDER_SENDGRID_API_KEY=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
@@ -63,6 +64,7 @@ run r:
 	EMAIL_PORT=$(EMAIL_PORT) \
 	REDIS_HOST=$(REDIS_HOST) \
 	REDIS_PORT=$(REDIS_PORT) \
+	REDIS_PASSWORD=$(REDIS_PASSWORD) \
 	REDIS_DATABASE=$(REDIS_DATABASE) \
 	PROVIDERS=$(PROVIDERS)	\
 	PROVIDER_SENDGRID_API_KEY=$(PROVIDER_SENDGRID_API_KEY) \
@@ -131,6 +133,5 @@ update up: push
 deploy de: 
 	@echo "[deploy] Deploying to $(VERSION) version..."
 	@make stop
-	@
 
 .PHONY: clean c run r build b linux l add-migration am migrations m docker d docker-login dl push p compose co stop s clean-proto cp proto pro test t template tmpl

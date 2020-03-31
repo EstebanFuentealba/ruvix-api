@@ -79,6 +79,7 @@ func main() {
 		err := errors.New("invalid REDIS_PORT env value")
 		log.Fatal(err)
 	}
+	redisPassword := os.Getenv("REDIS_PASSWORD")
 	redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
 	redisDatabase := os.Getenv("REDIS_DATABASE")
 	if redisDatabase == "" {
@@ -104,7 +105,7 @@ func main() {
 		log.Fatal(err)
 	}
 	go func() {
-		email.Run(emailAddr, redisAddr, redisDatabase, providers)
+		email.Run(emailAddr, redisAddr, redisPassword, redisDatabase, providers)
 	}()
 
 	//
