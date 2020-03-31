@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package proto;
+
+import "github.com/microapis/users-api/proto/users.proto";
+import "github.com/microapis/auth-api/proto/auth.proto";
+import "github.com/microapis/messages-core/proto/messages.proto";
+
+// ------------------- Base -----------------
+
+// ------------------- Auth -------------------
+
+// ------------------ Debts -------------------
+
+// ----------------- Expenses -----------------
+
+// ------------------ Goals -------------------
+
+// ----------------- Incomes ------------------
+
+// ------------- Recommendations --------------
+
+// ----------------- Savings ------------------
+
+// ---------------- Scrappers -----------------
+
+// ---------------- Simulators ----------------

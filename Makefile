@@ -1,38 +1,49 @@
 #
-# SO variables
-#
-# DOCKER_USER
-# DOCKER_PASS
-#
-
-#
-# Internal variables
+# INTERNAL VARIABLES
+#	note: should export env values form .bashrc/.zshrc
+#				- REMOTE_IP
+# 			- REMOTE_USER
+#				- DOCKER_USER
+#				- DOCKER_PASS
 #
 VERSION=0.0.1
+LAST_VERSION=0.0.1
 NAME=uluru
 SVC=$(NAME)-api
 BIN_PATH=$(PWD)/bin
 BIN=$(BIN_PATH)/$(SVC)
 REGISTRY_URL=$(DOCKER_USER)
 
+#
+# ULURU SERVICE
+#
 HOST=localhost
 PORT=5000
 POSTGRES_DSN=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
 
+#
+# AUTH SERVICE
+#
 JWT_SECRET=mega-secret
 AUTH_HOST=localhost
 AUTH_PORT=5010
 
+#
+# USERS SERVICE
+#
 USERS_HOST=localhost
 USERS_PORT=5020
 
+#
+# EMAIL SERVICE
+#
 EMAIL_HOST=localhost
 EMAIL_PORT=5030
 REDIS_HOST=localhost
 REDIS_PORT=6379
 REDIS_DATABASE=1
 PROVIDERS=sendgrid
-PROVIDER_SENDGRID_API_KEY=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
+PROVIDER_SENDGRID_API_KEY=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
 
 clean c:
 	@echo "[clean] Cleaning bin folder..."
@@ -109,4 +120,17 @@ test t:
 	@cd $(GOPATH)/src/github.com/microapis/auth-api && make t
 	@cd $(GOPATH)/src/github.com/microapis/email-api && make t
 
-.PHONY: clean c run r build b linux l add-migration am migrations m docker d docker-login dl push p compose co stop s clean-proto cp proto pro test t
+template tmpl:
+	@echo "[template] Generating..."
+	@qtc template
+
+update up: push
+	@echo "[deploy] Update version on remote machine to $(VERSION) version..."
+	@ssh $(REMOTE_USER)@$(REMOTE_IP) -T "cat > /remotefile.txt"
+
+deploy de: 
+	@echo "[deploy] Deploying to $(VERSION) version..."
+	@make stop
+	@
+
+.PHONY: clean c run r build b linux l add-migration am migrations m docker d docker-login dl push p compose co stop s clean-proto cp proto pro test t template tmpl

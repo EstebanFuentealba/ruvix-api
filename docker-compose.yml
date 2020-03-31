@@ -6,7 +6,7 @@ volumes:
 
 services:
   #
-  # ULURU POSTGRES
+  # POSTGRES
   #
   uluru-postgres:
     container_name: uluru-postgres
@@ -19,14 +19,14 @@ services:
       - uluru-postgres-data:/var/lib/postgresql/data
 
   #
-  # ULURU REDIS
+  # REDIS
   #
   uluru-redis:
     image: redis
     ports:
       - 6379:6379
   #
-  # ULURU API
+  # API
   #
   # uluru-api:
   #   container_name: uluru-api
