@@ -19,4 +19,4 @@ COPY database/migrations/* /src/uluru-api/migrations/
 EXPOSE 5000
 
 # Run service
-CMD ["/bin/sh", "-l", "-c", "wait-db && cd /src/$SVC/migrations/ && goose postgres ${DATABASE_URL} up && uluru-api"]
+CMD ["/bin/sh", "-l", "-c", "wait-db && cd /src/uluru-api/migrations/ && goose postgres ${DATABASE_URL} up && uluru-api"]
