@@ -80,13 +80,20 @@ func main() {
 		log.Fatal(err)
 	}
 	redisPassword := os.Getenv("REDIS_PASSWORD")
-	log.Println("REDIS_PASSWORD", redisPassword)
 	redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
 	redisDatabase := os.Getenv("REDIS_DATABASE")
 	if redisDatabase == "" {
 		err := errors.New("invalid REDIS_DATABASE env value")
 		log.Fatal(err)
 	}
+
+	log.Println("============================")
+	log.Println("REDIS_HOST", redisHost)
+	log.Println("REDIS_PORT", redisPort)
+	log.Println("REDIS_PASSWORD", redisPassword)
+	log.Println("REDIS_DATABASE", redisDatabase)
+	log.Println("============================")
+
 	providersEnv := os.Getenv("PROVIDERS")
 	if providersEnv == "" {
 		log.Fatal(errors.New("PROVIDERS value not defined"))
