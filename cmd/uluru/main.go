@@ -80,6 +80,7 @@ func main() {
 		log.Fatal(err)
 	}
 	redisPassword := os.Getenv("REDIS_PASSWORD")
+	log.Println("REDIS_PASSWORD", redisPassword)
 	redisAddr := fmt.Sprintf("%s:%s", redisHost, redisPort)
 	redisDatabase := os.Getenv("REDIS_DATABASE")
 	if redisDatabase == "" {
