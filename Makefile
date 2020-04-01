@@ -6,8 +6,8 @@
 #				- DOCKER_USER
 #				- DOCKER_PASS
 #
-VERSION=0.0.6
-LAST_VERSION=0.0.5
+VERSION=0.0.7
+LAST_VERSION=0.0.6
 NAME=uluru
 SVC=$(NAME)-api
 BIN_PATH=$(PWD)/bin
@@ -80,7 +80,7 @@ migrations m:
 	@echo "[migrations] Runing migrations..."
 	@cd database/migrations && goose postgres $(DSN) up
 
-docker d:
+docker d: linux
 	@echo "[docker] Building image..."
 	@docker build -t $(SVC):$(VERSION) .
 	
@@ -120,12 +120,8 @@ template tmpl:
 	@echo "[template] Generating..."
 	@qtc template
 
-update up: push
-	@echo "[deploy] Update version on remote machine to $(VERSION) version..."
-	@ssh $(REMOTE_USER)@$(REMOTE_IP) -T "cat > /remotefile.txt"
-
-deploy de: 
+deploy de: docker
 	@echo "[deploy] Deploying to $(VERSION) version..."
-	@make stop
+	@git push dokku master
 
 .PHONY: clean c run r build b linux l add-migration am migrations m docker d docker-login dl push p compose co stop s clean-proto cp proto pro test t template tmpl
