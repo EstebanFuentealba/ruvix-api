@@ -6,8 +6,8 @@
 #				- DOCKER_USER
 #				- DOCKER_PASS
 #
-VERSION=0.0.8
-LAST_VERSION=0.0.7
+VERSION=0.0.9
+LAST_VERSION=0.0.8
 NAME=uluru
 SVC=$(NAME)-api
 BIN_PATH=$(PWD)/bin
@@ -17,7 +17,7 @@ REGISTRY_URL=$(DOCKER_USER)
 #
 # ULURU SERVICE
 #
-HOST=0.0.0.0
+HOST=localhost
 PORT=5000
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
 
