@@ -12,6 +12,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/jmlopezz/uluru-api/template"
+	"github.com/rs/cors"
 
 	authClient "github.com/microapis/auth-api/client"
 	authHTTP "github.com/microapis/auth-api/http"
@@ -76,7 +77,7 @@ func main() {
 	}
 
 	log.Println("============================")
-	log.Println("REDIS_URL", redisURL)
+	log.Println("11 REDIS_URL", redisURL)
 	log.Println("============================")
 
 	providersEnv := os.Getenv("PROVIDERS")
@@ -133,12 +134,19 @@ func main() {
 	authHTTP.Routes(r, ac)
 	usersHTTP.Routes(r, uc)
 	afpsimulatorHTTP.Routes(r)
-	r.Use(mux.CORSMethodMiddleware(r))
+	// r.Use(mux.CORSMethodMiddleware(r))
 	r.Use(loggingMiddleware)
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+	})
+	handler := c.Handler(r)
+
 	log.Println("Starting HTTP service...")
 	go func() {
 		log.Println(fmt.Sprintf("HTTP service running, Listening on: %v", addr))
-		err = http.ListenAndServe(":5000", r)
+		err = http.ListenAndServe(":5000", handler)
 		if err != nil {
 			log.Fatal(err)
 		}
