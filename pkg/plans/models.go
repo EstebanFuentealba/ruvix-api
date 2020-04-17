@@ -14,12 +14,6 @@ type Plan struct {
 	Price string `json:"price" gorm:"NOT NULL"`
 }
 
-// CREATE TABLE plan_features (
-// 	id uuid DEFAULT gen_reandom_uuid() UNIQUE,
-// 	plan_id uuid NOT NULL references plans(id),
-// 	feature_id: uuid NOT NULL references(features)
-// );
-
 type Feature struct {
 	database.Base
 
