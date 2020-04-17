@@ -1,8 +1,6 @@
 #
 # INTERNAL VARIABLES
 #	note: should export env values form .bashrc/.zshrc
-#				- REMOTE_IP
-# 			- REMOTE_USER
 #				- DOCKER_USER
 #				- DOCKER_PASS
 #
