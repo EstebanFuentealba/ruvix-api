@@ -1,4 +1,4 @@
-package institutions
+package savings
 
 import "github.com/jmlopezz/uluru-api/database"
 

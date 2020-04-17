@@ -1,4 +1,4 @@
-package institutions
+package savings
 
 import "database/sql/driver"
 
@@ -6,8 +6,8 @@ import "database/sql/driver"
 type Type string
 
 const (
-	Investment  Type = "investment"
-	Inmobiliary Type = "inmobiliary"
+	investment  Type = "investment"
+	inmobiliary Type = "inmobiliary"
 )
 
 // Scan ...
