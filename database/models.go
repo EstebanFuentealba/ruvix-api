@@ -3,15 +3,23 @@ package database
 import (
 	"time"
 
+	"github.com/jinzhu/gorm"
 	uuid "github.com/satori/go.uuid"
 )
 
 // Base struct used in all models
 type Base struct {
-	ID        uuid.UUID  `json:"id" gorm:"type:uuid;primary_key;not null;unique;"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	ID        uuid.UUID `gorm:"type:uuid;primary_key;unique;"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`
 }
 
-// connection to db method
+// BeforeCreate will set a UUID rather than numeric ID.
+func (base *Base) BeforeCreate(scope *gorm.Scope) error {
+	uuid, err := uuid.NewV4()
+	if err != nil {
+		return err
+	}
+	return scope.SetColumn("ID", uuid)
+}
