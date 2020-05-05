@@ -14,24 +14,33 @@ import (
 	"github.com/jmlopezz/uluru-api/template"
 	"github.com/rs/cors"
 
-	authClient "github.com/microapis/auth-api/client"
-	authHTTP "github.com/microapis/auth-api/http"
-	auth "github.com/microapis/auth-api/run"
+	a "github.com/microapis/authentication-api"
+	authclient "github.com/microapis/authentication-api/client"
+	authHTTP "github.com/microapis/authentication-api/http"
+	auth "github.com/microapis/authentication-api/run"
 
-	e "github.com/microapis/email-api"
-	emailClient "github.com/microapis/email-api/client"
+	emailclient "github.com/microapis/email-api/client"
 	email "github.com/microapis/email-api/run"
 
-	usersClient "github.com/microapis/users-api/client"
+	u "github.com/microapis/users-api"
+	usersclient "github.com/microapis/users-api/client"
 	usersHTTP "github.com/microapis/users-api/http"
 	users "github.com/microapis/users-api/run"
 
 	afpsimulatorHTTP "github.com/jmlopezz/afp-simulator/http"
+
+	"github.com/jmlopezz/uluru-api/database"
+	authmodel "github.com/jmlopezz/uluru-api/pkg/auth"
+	"github.com/jmlopezz/uluru-api/pkg/goals"
+	"github.com/jmlopezz/uluru-api/pkg/profile"
+	"github.com/jmlopezz/uluru-api/pkg/savings"
+	"github.com/jmlopezz/uluru-api/pkg/subscriptions"
+	usermodel "github.com/jmlopezz/uluru-api/pkg/users"
 )
 
 func main() {
 	//
-	// INITIALIZE ULURU
+	// INITIALIZE API
 	//
 	postgresDSN := os.Getenv("DATABASE_URL")
 	if postgresDSN == "" {
@@ -59,12 +68,17 @@ func main() {
 		log.Fatalln("missing env variable USERS_PORT")
 	}
 	usersAddr := fmt.Sprintf("%s:%s", usersHost, usersPort)
-	uc, err := usersClient.New(usersAddr)
+	uc, err := usersclient.New(usersAddr)
 	if err != nil {
 		log.Fatal(err)
 	}
 	go func() {
-		users.Run(usersAddr, postgresDSN)
+		users.Run(usersAddr, postgresDSN, &u.Events{
+			AfterCreate: func() error {
+				log.Println("Users: here in AfterCreate event")
+				return nil
+			},
+		})
 	}()
 
 	//
@@ -75,10 +89,6 @@ func main() {
 		err := errors.New("invalid REDIS_URL env value")
 		log.Fatal(err)
 	}
-
-	log.Println("============================")
-	log.Println("11 REDIS_URL", redisURL)
-	log.Println("============================")
 
 	providersEnv := os.Getenv("PROVIDERS")
 	if providersEnv == "" {
@@ -94,7 +104,7 @@ func main() {
 		log.Fatalln("missing env variable EMAIL_PORT")
 	}
 	emailAddr := fmt.Sprintf("%s:%s", emailHost, emailPort)
-	ec, err := emailClient.New(emailAddr)
+	ec, err := emailclient.New(emailAddr)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -114,12 +124,12 @@ func main() {
 		log.Fatalln("missing env variable AUTH_PORT")
 	}
 	authAddr := fmt.Sprintf("%s:%s", authHost, authPort)
-	ac, err := authClient.New(authAddr)
+	ac, err := authclient.New(authAddr)
 	if err != nil {
 		log.Fatal(err)
 	}
 	go func() {
-		auth.Run(authAddr, postgresDSN, usersAddr, &e.MailingTemplates{
+		auth.Run(authAddr, postgresDSN, usersAddr, &a.MailingTemplates{
 			Signup:          template.SignupTemplate(ec),
 			VerifyEmail:     template.VerifyEmailTemplate(ec),
 			ForgotPassword:  template.ForgotPasswordTemplate(ec),
@@ -128,20 +138,51 @@ func main() {
 	}()
 
 	//
-	// INITIALIZE HTTP SERVER
+	// HTTP SERVER
 	//
 	r := mux.NewRouter()
+	db, err := database.NewPostgres(postgresDSN)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	db.LogMode(true)
+
+	// Auth (microapis/authentication-api)
+	authmodel.RunMigrations(db)
 	authHTTP.Routes(r, ac)
+
+	// Users (microapis/users-api)
+	usermodel.RunMigrations(db)
 	usersHTTP.Routes(r, uc)
+
+	// Simulations (jmlopezz/afp-simulator)
 	afpsimulatorHTTP.Routes(r)
-	// r.Use(mux.CORSMethodMiddleware(r))
+
+	// Profile (jmlopezz/uluru-api)
+	profile.RunMigrations(db)
+	profile.Routes(r, ac, profile.NewStore(db))
+
+	// Goals (jmlopezz/uluru-api)
+	goals.RunMigrations(db)
+	goals.Routes(r, ac, goals.NewGoalStore(db), goals.NewRetirementGoalStore(db))
+
+	// Savings (jmlopezz/uluru-api)
+	savings.RunMigrations(db)
+	savings.Routes(r, ac, savings.NewInstitutionStore(db), savings.NewRetirementInstrumentStore(db))
+
+	// Subscriptions (jmlopezz/uluru-api)
+	subscriptions.RunMigrations(db)
+	subscriptions.Routes(r, ac, subscriptions.NewSubscriptionStore(db), subscriptions.NewProviderStore(db), subscriptions.NewTransactionStore(db))
+
+	// Notifications (jmlopezz/uluru-api)
+
 	r.Use(loggingMiddleware)
 
-	c := cors.New(cors.Options{
+	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
-	})
-	handler := c.Handler(r)
+	}).Handler(r)
 
 	log.Println("Starting HTTP service...")
 	go func() {
