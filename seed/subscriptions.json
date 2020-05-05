@@ -1,0 +1,64 @@
+{
+  "subscriptions": [
+    {
+      "name": "Plan Gratis",
+      "price": 0,
+      "months": 0,
+      "features": [
+        {
+          "text": "Recomendaciones Personalizadas"
+        },
+        {
+          "text": "Acceso a Talleres y Webinars"
+        }
+      ]
+    },
+    {
+      "name": "Plan Lite",
+      "price": 10000,
+      "months": 3,
+      "features": [
+        {
+          "text": "Recomendaciones Personalizadas"
+        },
+        {
+          "text": "Acceso a Talleres y Webinars"
+        },
+        {
+          "text": "Acceso a Cursos (50% descuento)"
+        },
+        {
+          "text": "Plan de Ahorros"
+        }
+      ]
+    },
+    {
+      "name": "Plan Full",
+      "price": 3000,
+      "months": 12,
+      "features": [
+        {
+          "text": "Recomendaciones Personalizadas"
+        },
+        {
+          "text": "Acceso a Talleres y Webinars"
+        },
+        {
+          "text": "Acceso a Cursos (Gratis)"
+        },
+        {
+          "text": "Plan de Ahorros"
+        },
+        {
+          "text": "Asesor Financiero Personal"
+        },
+        {
+          "text": "Análisis de Situación Financiera"
+        },
+        {
+          "text": "Sesiones de Coaching Online (1 Sesión)"
+        }
+      ]
+    }
+  ]
+}
