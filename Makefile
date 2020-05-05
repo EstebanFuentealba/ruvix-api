@@ -11,6 +11,7 @@ SVC=$(NAME)-api
 BIN_PATH=$(PWD)/bin
 BIN=$(BIN_PATH)/$(SVC)
 REGISTRY_URL=$(DOCKER_USER)
+GOPATH=$(HOME)/go
 
 #
 # ULURU SERVICE
@@ -39,7 +40,7 @@ EMAIL_HOST=localhost
 EMAIL_PORT=5030
 REDIS_URL=redis://localhost:6379/0
 PROVIDERS=sendgrid
-PROVIDER_SENDGRID_API_KEY=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
+PROVIDER_SENDGRID_API_KEY=SG.5-x4_3s-QKyPYQjPNP1l_Q.0lgbeslquQkSQSQNTd84vx2SjG-r90XYU35FKnK0Qqg===
 
 clean c:
 	@echo "[clean] Cleaning bin folder..."
@@ -76,7 +77,7 @@ add-migration am:
 
 migrations m:
 	@echo "[migrations] Runing migrations..."
-	@cd database/migrations && goose postgres $(DSN) up
+	@cd database/migrations && goose postgres $(DATABASE_URL) up
 
 docker d: linux
 	@echo "[docker] Building image..."
@@ -108,11 +109,92 @@ proto pro: clean-proto
 	@echo "[proto] Generating proto file..."
 	@protoc -I proto -I $(GOPATH)/src --go_out=plugins=grpc:./proto ./proto/*.proto 
 
-test t:
-	@echo "[test] Testing $(NAME)..."
-	@cd $(GOPATH)/src/github.com/microapis/users-api && make t
-	@cd $(GOPATH)/src/github.com/microapis/auth-api && make t
-	@cd $(GOPATH)/src/github.com/microapis/email-api && make t
+test-users tu:
+	@echo ""
+	@echo ""
+	@echo "=========================="
+	@echo "[test] Testing Users..."
+	@echo "=========================="
+	@echo ""
+	@HOST=$(USERS_HOST) \
+	 PORT=$(USERS_PORT) \
+	 go test -count=1 -v $(GOPATH)/src/github.com/microapis/users-api/client/users_test.go
+
+test-authentication ta:
+	@echo ""
+	@echo ""
+	@echo "==================================="
+	@echo "[test] Testing Authentication..."
+	@echo "==================================="
+	@echo ""
+	@HOST=$(AUTH_HOST) \
+	 PORT=$(AUTH_PORT) \
+	 go test -count=1 -v $(GOPATH)/src/github.com/microapis/authentication-api/client/auth_test.go
+
+test-profile tp:
+	@echo ""
+	@echo ""
+	@echo "============================"
+	@echo "[test] Testing Profile..."
+	@echo "============================"
+	@echo ""
+	@HOST=$(HOST) \
+	 PORT=$(PORT) \
+	 AUTH_HOST=$(AUTH_HOST) \
+	 AUTH_PORT=$(AUTH_PORT) \
+	 go test -count=1 -v ./pkg/profile/client_test.go
+
+test-savings ts:
+	@echo ""
+	@echo ""
+	@echo "=========================="
+	@echo "[test] Testing Savings..."
+	@echo "=========================="
+	@echo ""
+	@HOST=$(HOST) \
+	 PORT=$(PORT) \
+	 AUTH_HOST=$(AUTH_HOST) \
+	 AUTH_PORT=$(AUTH_PORT) \
+	 go test -count=1 -v ./pkg/savings/client_test.go
+
+test-goals tg:
+	@echo ""
+	@echo ""
+	@echo "=========================="
+	@echo "[test] Testing Goals..."
+	@echo "=========================="
+	@echo ""
+	@HOST=$(HOST) \
+	 PORT=$(PORT) \
+	 AUTH_HOST=$(AUTH_HOST) \
+	 AUTH_PORT=$(AUTH_PORT) \
+	 go test -count=1 -v ./pkg/goals/client_test.go
+
+test-subscriptions tsu:
+	@echo ""
+	@echo ""
+	@echo "=================================="
+	@echo "[test] Testing Subscriptions..."
+	@echo "=================================="
+	@echo ""
+	@HOST=$(HOST) \
+	 PORT=$(PORT) \
+	 AUTH_HOST=$(AUTH_HOST) \
+	 AUTH_PORT=$(AUTH_PORT) \
+	 go test -count=1 -v ./pkg/subscriptions/client_test.go
+	
+test-email te:
+	@echo ""
+	@echo ""
+	@echo "=========================="
+	@echo "[test] Testing Email..."
+	@echo "=========================="
+	@echo ""
+	@HOST=$(EMAIL_HOST) \
+	 PORT=$(EMAIL_PORT) \
+	 go test -count=1 -v $(GOPATH)/src/github.com/microapis/email-api/client/email_test.go
+
+test t: test-users test-authentication test-profile test-savings test-goals test-subscriptions
 
 template tmpl:
 	@echo "[template] Generating..."
