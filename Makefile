@@ -4,8 +4,8 @@
 #				- DOCKER_USER
 #				- DOCKER_PASS
 #
-VERSION=0.0.11
-LAST_VERSION=0.0.10
+VERSION=0.0.12
+LAST_VERSION=0.0.11
 NAME=uluru
 SVC=$(NAME)-api
 BIN_PATH=$(PWD)/bin
@@ -46,7 +46,7 @@ clean c:
 	@echo "[clean] Cleaning bin folder..."
 	@rm -rf bin/
 
-run r:
+run r: 
 	@echo "[running] Running service..."
 	@HOST=$(HOST) \
 	PORT=$(PORT) \
@@ -71,14 +71,6 @@ linux l:
 	@echo "[build-linux] Building service..."
 	@cd cmd/$(NAME) && GOOS=linux GOARCH=amd64 go build -o $(BIN)
 
-add-migration am: 
-	@echo "[add-migration] Adding migration"
-	@goose -dir "./database/migrations" create $(name) sql
-
-migrations m:
-	@echo "[migrations] Runing migrations..."
-	@cd database/migrations && goose postgres $(DATABASE_URL) up
-
 docker d: linux
 	@echo "[docker] Building image..."
 	@docker build -t $(SVC):$(VERSION) .
@@ -96,6 +88,16 @@ compose co:
 	@echo "[docker-compose] Running docker-compose..."
 	@docker-compose build
 	@docker-compose up
+
+compose-development code:
+	@echo "[docker-compose] Running docker-compose in development mode..."
+	@docker-compose -f docker-compose.development.yml build
+	@docker-compose -f docker-compose.development.yml up
+
+compose-local colo:
+	@echo "[docker-compose] Running docker-compose in local mode..."
+	@docker-compose -f docker-compose.local.yml build
+	@docker-compose -f docker-compose.local.yml up
 
 stop s: 
 	@echo "[docker-compose] Stopping docker-compose..."
@@ -204,4 +206,4 @@ deploy de: docker
 	@echo "[deploy] Deploying to $(VERSION) version..."
 	@git push dokku master
 
-.PHONY: clean c run r build b linux l add-migration am migrations m docker d docker-login dl push p compose co stop s clean-proto cp proto pro test t template tmpl
+.PHONY: clean c run r build b linux l docker d docker-login dl push p compose co stop s clean-proto cp proto pro test t template tmpl
