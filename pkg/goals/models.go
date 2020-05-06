@@ -173,7 +173,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := db.CreateTable(&GoalModel{}).Error
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 
 		runGoalSeed = true
@@ -183,7 +182,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := db.CreateTable(&RetirementGoalModel{}).Error
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 	}
 
@@ -191,7 +189,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := seedGoal(db)
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 	}
 

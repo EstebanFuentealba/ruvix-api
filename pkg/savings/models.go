@@ -363,7 +363,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := db.CreateTable(&InstitutionModel{}).Error
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 
 		runInstitutionSeed = true
@@ -373,7 +372,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := db.CreateTable(&AccountModel{}).Error
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 	}
 
@@ -381,7 +379,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := db.CreateTable(&AccountModel{}).Error
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 	}
 
@@ -389,7 +386,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := db.CreateTable(&InstrumentModel{}).Error
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 	}
 
@@ -397,7 +393,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := db.CreateTable(&RetirementInstrumentModel{}).Error
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 	}
 
@@ -405,7 +400,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := seedInstitution(db)
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 	}
 

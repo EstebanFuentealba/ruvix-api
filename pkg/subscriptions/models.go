@@ -256,7 +256,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := db.CreateTable(&SubscriptionModel{}).Error
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 
 		runSubcriptionSeed = true
@@ -266,7 +265,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := db.CreateTable(&FeatureModel{}).Error
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 	}
 
@@ -274,7 +272,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := db.CreateTable(&TransactionModel{}).Error
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 	}
 
@@ -282,7 +279,6 @@ func RunMigrations(db *gorm.DB) error {
 		err := seedSubscription(db)
 		if err != nil {
 			log.Fatalln(err)
-			return err
 		}
 	}
 
