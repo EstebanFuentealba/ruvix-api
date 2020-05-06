@@ -17,3 +17,11 @@ services:
       - POSTGRES_HOST_AUTH_METHOD=trust
     volumes:
       - uluru-postgres-data:/var/lib/postgresql/data
+
+  #
+  # REDIS
+  #
+  uluru-redis:
+    image: redis
+    ports:
+      - 6379:6379
