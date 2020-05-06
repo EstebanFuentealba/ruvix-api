@@ -165,8 +165,21 @@ func (c *Client) CreateSubscription(s *Subscription) (*Subscription, error) {
 
 // Subscribe ...
 func (c *Client) Subscribe(subscriptionID string, providerID string) (*Transaction, error) {
+	r := struct {
+		Subscribe *Transaction `json:"subscribe"`
+	}{
+		Subscribe: &Transaction{
+			ProviderID: providerID,
+		},
+	}
+
+	b, err := json.Marshal(&r)
+	if err != nil {
+		return nil, err
+	}
+
 	url := fmt.Sprintf("%s/subscriptions/%s/subscribe", c.URL, subscriptionID)
-	req, err := http.NewRequest("POST", url, nil)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(b))
 	if err != nil {
 		return nil, err
 	}
@@ -282,22 +295,9 @@ func (c *Client) Refresh(subscriptionID string, providerID string) (*Transaction
 }
 
 // Verify ...
-func (c *Client) Verify(subscriptionID string, transactionID string) (*Transaction, error) {
-	r := struct {
-		Verify *Transaction `json:"verify"`
-	}{}
-
-	r.Verify = &Transaction{
-		ID: transactionID,
-	}
-
-	b, err := json.Marshal(&r)
-	if err != nil {
-		return nil, err
-	}
-
-	url := fmt.Sprintf("%s/subscriptions/%s/refresh", c.URL, subscriptionID)
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(b))
+func (c *Client) Verify(subscriptionID string) (*Transaction, error) {
+	url := fmt.Sprintf("%s/subscriptions/%s/verify", c.URL, subscriptionID)
+	req, err := http.NewRequest("POST", url, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -339,6 +339,9 @@ func (c *Client) ListTransactions() ([]*Transaction, error) {
 	}
 
 	req.Header.Add("Content-Type", "application/json; charset=utf-8")
+	if c.token != "" {
+		req.Header.Add("Authorization", c.token)
+	}
 
 	res, err := c.client.Do(req)
 	if err != nil {
@@ -364,7 +367,7 @@ func (c *Client) ListTransactions() ([]*Transaction, error) {
 
 // LastTransaction ...
 func (c *Client) LastTransaction() (*Transaction, error) {
-	url := fmt.Sprintf("%s/subscriptions/providers", c.URL)
+	url := fmt.Sprintf("%s/subscriptions/transactions/last", c.URL)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -372,6 +375,9 @@ func (c *Client) LastTransaction() (*Transaction, error) {
 	}
 
 	req.Header.Add("Content-Type", "application/json; charset=utf-8")
+	if c.token != "" {
+		req.Header.Add("Authorization", c.token)
+	}
 
 	res, err := c.client.Do(req)
 	if err != nil {

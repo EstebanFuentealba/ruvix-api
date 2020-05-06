@@ -1,6 +1,7 @@
 package subscriptions
 
 import (
+	"log"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -249,6 +250,41 @@ type Query struct {
 }
 
 // RunMigrations ...
-func RunMigrations(db *gorm.DB) {
-	db.AutoMigrate(&SubscriptionModel{}, &FeatureModel{}, &TransactionModel{})
+func RunMigrations(db *gorm.DB) error {
+	runSubcriptionSeed := false
+	if !db.HasTable(&SubscriptionModel{}) {
+		err := db.CreateTable(&SubscriptionModel{}).Error
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+
+		runSubcriptionSeed = true
+	}
+
+	if !db.HasTable(&FeatureModel{}) {
+		err := db.CreateTable(&FeatureModel{}).Error
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+	}
+
+	if !db.HasTable(&TransactionModel{}) {
+		err := db.CreateTable(&TransactionModel{}).Error
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+	}
+
+	if runSubcriptionSeed {
+		err := seedSubscription(db)
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+	}
+
+	return nil
 }

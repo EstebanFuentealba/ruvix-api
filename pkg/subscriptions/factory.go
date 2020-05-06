@@ -1,13 +1,13 @@
 package subscriptions
 
 import (
-	"fmt"
+	"time"
 
 	urulu "github.com/jmlopezz/uluru-api"
 )
 
-// FactoryCreateSubscription ...
-func FactoryCreateSubscription(addr string, opts urulu.ClientOptions) (*Subscription, *Subscription, error) {
+// FactoryCreatePaySubscription ...
+func FactoryCreatePaySubscription(addr string, opts urulu.ClientOptions) (*Subscription, *Subscription, error) {
 	before := &Subscription{
 		Features: []*Feature{
 			&Feature{
@@ -30,19 +30,49 @@ func FactoryCreateSubscription(addr string, opts urulu.ClientOptions) (*Subscrip
 		return nil, nil, err
 	}
 
-	fmt.Println(1111)
 	after, err := sc.CreateSubscription(before)
 	if err != nil {
 		return nil, nil, err
 	}
-	fmt.Println(2222)
+
+	return before, after, nil
+}
+
+// FactoryCreateFreeSubscription ...
+func FactoryCreateFreeSubscription(addr string, opts urulu.ClientOptions) (*Subscription, *Subscription, error) {
+	before := &Subscription{
+		Features: []*Feature{
+			&Feature{
+				Text: "example feature 1",
+			},
+			&Feature{
+				Text: "example feature 2",
+			},
+			&Feature{
+				Text: "example feature 3",
+			},
+		},
+		Name:   "example free subscription name",
+		Price:  0,
+		Months: 0,
+	}
+
+	sc, err := NewClient(addr, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	after, err := sc.CreateSubscription(before)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	return before, after, nil
 }
 
 // FactoryListSubscriptions ...
 func FactoryListSubscriptions(addr string, opts urulu.ClientOptions) (*Subscription, []*Subscription, error) {
-	_, before, err := FactoryCreateSubscription(addr, opts)
+	_, before, err := FactoryCreatePaySubscription(addr, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -75,9 +105,29 @@ func FactoryListProviders(addr string, opts urulu.ClientOptions) ([]*Provider, e
 	return after, nil
 }
 
-// FactorySubscribe ...
-func FactorySubscribe(addr string, opts urulu.ClientOptions) (*Subscription, *Transaction, error) {
-	_, before, err := FactoryCreateSubscription(addr, opts)
+// FactoryFreeSubscribe ...
+func FactoryFreeSubscribe(addr string, opts urulu.ClientOptions) (*Subscription, *Transaction, error) {
+	_, before, err := FactoryCreateFreeSubscription(addr, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	gs, err := NewClient(addr, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	after, err := gs.Subscribe(before.ID, ProviderFree)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return before, after, nil
+}
+
+// FactoryPaySubscribe ...
+func FactoryPaySubscribe(addr string, opts urulu.ClientOptions) (*Subscription, *Transaction, error) {
+	_, before, err := FactoryCreatePaySubscription(addr, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -95,9 +145,53 @@ func FactorySubscribe(addr string, opts urulu.ClientOptions) (*Subscription, *Tr
 	return before, after, nil
 }
 
-// FactoryUnsubscribe ...
-func FactoryUnsubscribe(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
-	_, before, err := FactorySubscribe(addr, opts)
+// FactoryPayUnsubscribe ...
+func FactoryPayUnsubscribe(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+	beforeSubscription, before, err := FactoryPaySubscribe(addr, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	time.Sleep(10 * time.Millisecond)
+
+	gs, err := NewClient(addr, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	after, err := gs.Unsubscribe(beforeSubscription.ID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return before, after, nil
+}
+
+// FactoryFreeUnsubscribe ...
+func FactoryFreeUnsubscribe(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+	beforeSubscription, before, err := FactoryFreeSubscribe(addr, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	time.Sleep(10 * time.Millisecond)
+
+	gs, err := NewClient(addr, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	after, err := gs.Unsubscribe(beforeSubscription.ID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return before, after, nil
+}
+
+// FactoryPayRefresh ...
+func FactoryPayRefresh(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+	beforeSubscription, before, err := FactoryPaySubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -107,7 +201,7 @@ func FactoryUnsubscribe(addr string, opts urulu.ClientOptions) (*Transaction, *T
 		return nil, nil, err
 	}
 
-	after, err := gs.Unsubscribe(before.ID)
+	after, err := gs.Refresh(beforeSubscription.ID, ProviderWebpayPlusNormal)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -115,9 +209,9 @@ func FactoryUnsubscribe(addr string, opts urulu.ClientOptions) (*Transaction, *T
 	return before, after, nil
 }
 
-// FactoryRefresh ...
-func FactoryRefresh(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
-	_, before, err := FactorySubscribe(addr, opts)
+// FactoryFreeRefresh ...
+func FactoryFreeRefresh(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+	beforeSubscription, before, err := FactoryFreeSubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -127,7 +221,7 @@ func FactoryRefresh(addr string, opts urulu.ClientOptions) (*Transaction, *Trans
 		return nil, nil, err
 	}
 
-	after, err := gs.Refresh(before.ID, ProviderWebpayPlusNormal)
+	after, err := gs.Refresh(beforeSubscription.ID, ProviderWebpayPlusNormal)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -135,11 +229,49 @@ func FactoryRefresh(addr string, opts urulu.ClientOptions) (*Transaction, *Trans
 	return before, after, nil
 }
 
-// TODO(ca): implements FactoryVerify
+// FactoryPayVerify ...
+func FactoryPayVerify(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+	beforeSubscription, before, err := FactoryPaySubscribe(addr, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	gs, err := NewClient(addr, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	after, err := gs.Verify(beforeSubscription.ID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return before, after, nil
+}
+
+// FactoryFreeVerify ...
+func FactoryFreeVerify(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+	beforeSubscription, before, err := FactoryFreeSubscribe(addr, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	gs, err := NewClient(addr, opts)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	after, err := gs.Verify(beforeSubscription.ID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return before, after, nil
+}
 
 // ListTransactions ...
 func ListTransactions(addr string, opts urulu.ClientOptions) (*Transaction, []*Transaction, error) {
-	_, before, err := FactorySubscribe(addr, opts)
+	_, before, err := FactoryPaySubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -159,7 +291,7 @@ func ListTransactions(addr string, opts urulu.ClientOptions) (*Transaction, []*T
 
 // LastTransaction ...
 func LastTransaction(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
-	_, before, err := FactorySubscribe(addr, opts)
+	_, before, err := FactoryPaySubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
 	}
