@@ -15,6 +15,11 @@ const (
 	ProviderWebpayPatpass    = "webpay-patpass"
 )
 
+const (
+	daysBeforeDueDate = 3
+	daysAfterDueDate  = 5
+)
+
 // Subscription ...
 type Subscription struct {
 	ID string `json:"id"`

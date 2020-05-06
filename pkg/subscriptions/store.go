@@ -9,18 +9,21 @@ import (
 	"github.com/teris-io/shortid"
 )
 
-const (
-	daysAfterDueDate = 3
-)
-
 // SubscriptionStore service definition
 type SubscriptionStore interface {
-	List() ([]*Subscription, error)
-	Create(i *Subscription) (*Subscription, error)
-	Get(q Query) (*Subscription, error)
-	Subscribe(q Query) (*Transaction, error)
-	Unsubscribe(q Query) (*Transaction, error)
-	Refresh(q Query) (*Transaction, error)
+	ListSubscriptions() ([]*Subscription, error)
+	CreateSubscription(*Subscription) (*Subscription, error)
+	GetSubscription(QuerySubscription) (*Subscription, error)
+	Subscribe(QueryTransaction) (*Transaction, error)
+	Unsubscribe(QueryTransaction) (*Transaction, error)
+	Refresh(QueryTransaction) (*Transaction, error)
+	ListProviders() ([]*Provider, error)
+	ListTransactions(q QueryTransaction) ([]*Transaction, error)
+	ListTransactionsToExpire() ([]*Transaction, error)
+	ListExpiredTransactions() ([]*Transaction, error)
+	CreateTransaction(*Transaction) (*Transaction, error)
+	UpdateTransaction(*Transaction) (*Transaction, error)
+	LastTransaction(string) (*Transaction, error)
 }
 
 type subscriptionStoreDB struct {
@@ -34,8 +37,8 @@ func NewSubscriptionStore(db *gorm.DB) SubscriptionStore {
 	}
 }
 
-// List ...
-func (ss *subscriptionStoreDB) List() ([]*Subscription, error) {
+// ListSubscriptions ...
+func (ss *subscriptionStoreDB) ListSubscriptions() ([]*Subscription, error) {
 	subscriptionModels := make([]*SubscriptionModel, 0)
 
 	// get subscriptions
@@ -59,8 +62,8 @@ func (ss *subscriptionStoreDB) List() ([]*Subscription, error) {
 	return subscriptions, nil
 }
 
-// Create ...
-func (ss *subscriptionStoreDB) Create(i *Subscription) (*Subscription, error) {
+// CreateSubscription ...
+func (ss *subscriptionStoreDB) CreateSubscription(i *Subscription) (*Subscription, error) {
 	model := &SubscriptionModel{}
 
 	err := model.From(i)
@@ -77,12 +80,12 @@ func (ss *subscriptionStoreDB) Create(i *Subscription) (*Subscription, error) {
 	return model.To(), nil
 }
 
-// Get ...
-func (ss *subscriptionStoreDB) Get(q Query) (*Subscription, error) {
+// GetSubscription ...
+func (ss *subscriptionStoreDB) GetSubscription(q QuerySubscription) (*Subscription, error) {
 	subscriptionModel := &SubscriptionModel{}
 
 	// get subscriptions
-	err := ss.DB.Where("id = ?", q.ID).Find(subscriptionModel).Error
+	err := ss.DB.Where("price = ?", q.Price).Order("created_at DESC").Limit(1).First(subscriptionModel).Error
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +94,7 @@ func (ss *subscriptionStoreDB) Get(q Query) (*Subscription, error) {
 }
 
 // Subscribe ...
-func (ss *subscriptionStoreDB) Subscribe(q Query) (*Transaction, error) {
+func (ss *subscriptionStoreDB) Subscribe(q QueryTransaction) (*Transaction, error) {
 	// get last transaction
 	transactionModel := &TransactionModel{}
 	err := ss.DB.Where("user_id = ?", q.UserID).Order("created_at DESC").Limit(1).First(transactionModel).Error
@@ -161,7 +164,7 @@ func (ss *subscriptionStoreDB) Subscribe(q Query) (*Transaction, error) {
 		t.ProviderID = q.ProviderID
 		t.Status = StatusTransactionPending
 		t.DueDate = now.AddDate(0, transactionModel.Subscription.Months, 0).Unix()
-		t.RemindedAt = now.AddDate(0, transactionModel.Subscription.Months, 0).AddDate(0, 0, -daysAfterDueDate).Unix()
+		t.RemindedAt = now.AddDate(0, transactionModel.Subscription.Months, 0).AddDate(0, 0, -daysBeforeDueDate).Unix()
 	}
 
 	// parse transaction to model
@@ -183,7 +186,7 @@ func (ss *subscriptionStoreDB) Subscribe(q Query) (*Transaction, error) {
 }
 
 // Unsubscribe ...
-func (ss *subscriptionStoreDB) Unsubscribe(q Query) (*Transaction, error) {
+func (ss *subscriptionStoreDB) Unsubscribe(q QueryTransaction) (*Transaction, error) {
 	// get last transaction
 	model := &TransactionModel{}
 	err := ss.DB.Where("user_id = ?", q.UserID).Order("updated_at DESC").Limit(1).First(model).Error
@@ -216,7 +219,7 @@ func (ss *subscriptionStoreDB) Unsubscribe(q Query) (*Transaction, error) {
 }
 
 // Refresh ...
-func (ss *subscriptionStoreDB) Refresh(q Query) (*Transaction, error) {
+func (ss *subscriptionStoreDB) Refresh(q QueryTransaction) (*Transaction, error) {
 	// get last transaction
 	transactionModel := &TransactionModel{}
 	err := ss.DB.Where("user_id = ?", q.UserID).Order("created_at DESC").Limit(1).First(transactionModel).Error
@@ -271,23 +274,8 @@ func (ss *subscriptionStoreDB) Refresh(q Query) (*Transaction, error) {
 	return model.To(), nil
 }
 
-// ProviderStore service definition
-type ProviderStore interface {
-	List() ([]*Provider, error)
-}
-
-type providerStoreDB struct {
-	DB *gorm.DB
-}
-
-// NewProviderStore ...
-func NewProviderStore(db *gorm.DB) ProviderStore {
-	return &providerStoreDB{
-		DB: db,
-	}
-}
-
-func (ss *providerStoreDB) List() ([]*Provider, error) {
+// ListProviders ...
+func (ss *subscriptionStoreDB) ListProviders() ([]*Provider, error) {
 	providers := make([]*Provider, 0)
 
 	providers = append(providers, &Provider{
@@ -301,31 +289,15 @@ func (ss *providerStoreDB) List() ([]*Provider, error) {
 	return providers, nil
 }
 
-// TransactionStore service definition
-type TransactionStore interface {
-	List() ([]*Transaction, error)
-	Create(*Transaction) (*Transaction, error)
-	Update(*Transaction) (*Transaction, error)
-	Last(string) (*Transaction, error)
-}
-
-type transactionStoreDB struct {
-	DB *gorm.DB
-}
-
-// NewTransactionStore ...
-func NewTransactionStore(db *gorm.DB) TransactionStore {
-	return &transactionStoreDB{
-		DB: db,
+// ListTransactions ...
+func (ss *subscriptionStoreDB) ListTransactions(q QueryTransaction) ([]*Transaction, error) {
+	if q.UserID != "" {
+		return nil, errors.New("undefined UserID")
 	}
-}
-
-// List ...
-func (ts *transactionStoreDB) List() ([]*Transaction, error) {
-	transactionModels := make([]*TransactionModel, 0)
 
 	// Get transactions
-	err := ts.DB.Find(&transactionModels).Error
+	transactionModels := make([]*TransactionModel, 0)
+	err := ss.DB.Where("user_id = ?", q.UserID).Find(&transactionModels).Error
 	if err != nil {
 		return nil, err
 	}
@@ -339,8 +311,56 @@ func (ts *transactionStoreDB) List() ([]*Transaction, error) {
 	return transactions, nil
 }
 
-// Create ...
-func (ts *transactionStoreDB) Create(t *Transaction) (*Transaction, error) {
+// ListTransactionsToExpire ...
+func (ss *subscriptionStoreDB) ListTransactionsToExpire() ([]*Transaction, error) {
+	now := time.Now()
+
+	// transactions to expire
+	transactionModels := make([]*TransactionModel, 0)
+	tx := ss.DB.Where("status = ?", StatusTransactionCompleted)
+	tx = tx.Where("reminded_at <= ?", now)
+
+	// Get transactions
+	err := tx.Find(&transactionModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse transactions slice
+	transactions := make([]*Transaction, 0)
+	for i := 0; i < len(transactionModels); i++ {
+		transactions = append(transactions, transactionModels[i].To())
+	}
+
+	return transactions, nil
+}
+
+// ListExpiredTransactions ...
+func (ss *subscriptionStoreDB) ListExpiredTransactions() ([]*Transaction, error) {
+	afterDueDate := time.Now().AddDate(0, 0, daysAfterDueDate)
+
+	// transactions to expire
+	transactionModels := make([]*TransactionModel, 0)
+	tx := ss.DB.Where("status = ? OR status = ?", StatusTransactionPending, StatusTransactionRejected)
+	tx = tx.Where("due_date < ?", afterDueDate)
+
+	// Get transactions
+	err := tx.Find(&transactionModels).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// Parse transactions slice
+	transactions := make([]*Transaction, 0)
+	for i := 0; i < len(transactionModels); i++ {
+		transactions = append(transactions, transactionModels[i].To())
+	}
+
+	return transactions, nil
+}
+
+// CreateTransaction ...
+func (ss *subscriptionStoreDB) CreateTransaction(t *Transaction) (*Transaction, error) {
 	// parse transaction to model
 	model := &TransactionModel{}
 	err := model.From(t)
@@ -349,7 +369,7 @@ func (ts *transactionStoreDB) Create(t *Transaction) (*Transaction, error) {
 	}
 
 	// create transaction
-	err = ts.DB.Create(&model).Error
+	err = ss.DB.Create(&model).Error
 	if err != nil {
 		return nil, err
 	}
@@ -357,8 +377,8 @@ func (ts *transactionStoreDB) Create(t *Transaction) (*Transaction, error) {
 	return model.To(), nil
 }
 
-// Update ...
-func (ts *transactionStoreDB) Update(t *Transaction) (*Transaction, error) {
+// UpdateTransaction ...
+func (ss *subscriptionStoreDB) UpdateTransaction(t *Transaction) (*Transaction, error) {
 	// parse transaction to model
 	model := &TransactionModel{}
 	err := model.From(t)
@@ -367,7 +387,7 @@ func (ts *transactionStoreDB) Update(t *Transaction) (*Transaction, error) {
 	}
 
 	// save transaction
-	err = ts.DB.Save(&model).Error
+	err = ss.DB.Save(&model).Error
 	if err != nil {
 		return nil, err
 	}
@@ -375,17 +395,17 @@ func (ts *transactionStoreDB) Update(t *Transaction) (*Transaction, error) {
 	return model.To(), nil
 }
 
-// Last ...
-func (ts *transactionStoreDB) Last(userID string) (*Transaction, error) {
+// LastTransaction ...
+func (ss *subscriptionStoreDB) LastTransaction(userID string) (*Transaction, error) {
 	model := &TransactionModel{}
-	err := ts.DB.Where("user_id = ?", userID).Order("updated_at DESC").Limit(1).First(model).Error
+	err := ss.DB.Where("user_id = ?", userID).Order("updated_at DESC").Limit(1).First(model).Error
 	if err != nil {
 		return nil, err
 	}
 
 	// get subscription
 	model.Subscription = &SubscriptionModel{}
-	err = ts.DB.Where("id = ?", model.SubscriptionID).Find(model.Subscription).Error
+	err = ss.DB.Where("id = ?", model.SubscriptionID).Find(model.Subscription).Error
 	if err != nil {
 		return nil, err
 	}

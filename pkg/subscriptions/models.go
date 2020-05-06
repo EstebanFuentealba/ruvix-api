@@ -240,13 +240,19 @@ func (tm *TransactionModel) From(t *Transaction) error {
 	return nil
 }
 
-// Query ...
-type Query struct {
+// QuerySubscription ...
+type QuerySubscription struct {
+	Price float64
+}
+
+// QueryTransaction ...
+type QueryTransaction struct {
 	ID             string
 	UserID         string
 	SubscriptionID string
 	ProviderID     string
 	Status         string
+	DueDate        time.Time
 }
 
 // RunMigrations ...
