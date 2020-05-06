@@ -40,6 +40,8 @@ import (
 
 var (
 	httpServer *http.Server
+
+	subscriptionsWorkerPool subscriptions.WorkerPool
 )
 
 func main() {
@@ -183,7 +185,13 @@ func main() {
 
 	// Subscriptions (jmlopezz/uluru-api)
 	subscriptions.RunMigrations(db)
-	subscriptions.Routes(r, ac, subscriptions.NewSubscriptionStore(db), subscriptions.NewProviderStore(db), subscriptions.NewTransactionStore(db))
+	ss := subscriptions.NewSubscriptionStore(db)
+	subscriptions.Routes(r, ac, ss)
+	subscriptionsWorkerPool = subscriptions.NewWorkerPool(ss)
+	err = subscriptionsWorkerPool.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Notifications (jmlopezz/uluru-api)
 
@@ -226,6 +234,9 @@ func listenInterrupt(quit chan struct{}) {
 
 func gracefullShutdown() {
 	log.Println("Gracefully shutdown")
+
+	subscriptionsWorkerPool.Stop()
+
 	if err := httpServer.Shutdown(nil); err != nil {
 		log.Fatalln(err)
 	}
