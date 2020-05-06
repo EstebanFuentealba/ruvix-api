@@ -27,10 +27,10 @@ func Routes(r *mux.Router, ac *authclient.Client, is InstitutionStore) {
 	p.HandleFunc("/institutions", listInstitutions(ctx)).Methods(http.MethodGet, http.MethodOptions)
 
 	//
-	// USER ROUTES
+	// ADMIN ROUTES
 	//
 	u := r.PathPrefix("/api/v1/savings").Subrouter()
-	u.Use(util.ValidateJWTWithRole(ac, "user"))
+	u.Use(util.ValidateJWTWithRole(ac, "admin"))
 	// POST /api/v1/savings/institutions
 	u.HandleFunc("/institutions", createInstitution(ctx)).Methods(http.MethodPost, http.MethodOptions)
 }
