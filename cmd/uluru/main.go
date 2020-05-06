@@ -177,11 +177,11 @@ func main() {
 
 	// Goals (jmlopezz/uluru-api)
 	goals.RunMigrations(db)
-	goals.Routes(r, ac, goals.NewGoalStore(db), goals.NewRetirementGoalStore(db))
+	goals.Routes(r, ac, goals.NewGoalStore(db))
 
 	// Savings (jmlopezz/uluru-api)
 	savings.RunMigrations(db)
-	savings.Routes(r, ac, savings.NewInstitutionStore(db), savings.NewRetirementInstrumentStore(db))
+	savings.Routes(r, ac, savings.NewInstitutionStore(db))
 
 	// Subscriptions (jmlopezz/uluru-api)
 	subscriptions.RunMigrations(db)
