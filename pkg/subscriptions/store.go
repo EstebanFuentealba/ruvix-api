@@ -291,7 +291,7 @@ func (ss *subscriptionStoreDB) ListProviders() ([]*Provider, error) {
 
 // ListTransactions ...
 func (ss *subscriptionStoreDB) ListTransactions(q QueryTransaction) ([]*Transaction, error) {
-	if q.UserID != "" {
+	if q.UserID == "" {
 		return nil, errors.New("undefined UserID")
 	}
 

@@ -7,8 +7,10 @@ import (
 
 // GoalStore service definition
 type GoalStore interface {
-	List() ([]*Goal, error)
-	Create(p *Goal) (*Goal, error)
+	ListGoals() ([]*Goal, error)
+	CreateGoal(p *Goal) (*Goal, error)
+	CreateRetirementGoal(p *RetirementGoal) (*RetirementGoal, error)
+	GetLastRetirementGoal(q *RetirementGoalQuery) (*RetirementGoal, error)
 }
 
 type goalStoreDB struct {
@@ -22,8 +24,8 @@ func NewGoalStore(db *gorm.DB) GoalStore {
 	}
 }
 
-// List ...
-func (gs *goalStoreDB) List() ([]*Goal, error) {
+// ListGoals ...
+func (gs *goalStoreDB) ListGoals() ([]*Goal, error) {
 	goalmodels := make([]*GoalModel, 0)
 
 	err := gs.DB.Find(&goalmodels).Error
@@ -39,8 +41,8 @@ func (gs *goalStoreDB) List() ([]*Goal, error) {
 	return goals, nil
 }
 
-// Create ...
-func (gs *goalStoreDB) Create(g *Goal) (*Goal, error) {
+// CreateGoal ...
+func (gs *goalStoreDB) CreateGoal(g *Goal) (*Goal, error) {
 	model := &GoalModel{}
 
 	err := model.From(g)
@@ -56,25 +58,8 @@ func (gs *goalStoreDB) Create(g *Goal) (*Goal, error) {
 	return model.To(), nil
 }
 
-// RetirementGoalStore service definition
-type RetirementGoalStore interface {
-	Create(p *RetirementGoal) (*RetirementGoal, error)
-	GetLast(q *RetirementGoalQuery) (*RetirementGoal, error)
-}
-
-type retirementStoreDB struct {
-	DB *gorm.DB
-}
-
-// NewRetirementGoalStore ...
-func NewRetirementGoalStore(db *gorm.DB) RetirementGoalStore {
-	return &retirementStoreDB{
-		DB: db,
-	}
-}
-
-// Create ...
-func (rs *retirementStoreDB) Create(r *RetirementGoal) (*RetirementGoal, error) {
+// CreateRetirementGoal ...
+func (gs *goalStoreDB) CreateRetirementGoal(r *RetirementGoal) (*RetirementGoal, error) {
 	retirementModel := &RetirementGoalModel{}
 
 	err := retirementModel.From(r)
@@ -82,14 +67,14 @@ func (rs *retirementStoreDB) Create(r *RetirementGoal) (*RetirementGoal, error) 
 		return nil, err
 	}
 
-	err = rs.DB.Create(&retirementModel).Error
+	err = gs.DB.Create(&retirementModel).Error
 	if err != nil {
 		return nil, err
 	}
 
 	// Get Goal by GoalID
 	// goalModel := &GoalModel{}
-	// err = rs.DB.Where("id = ?", retirementModel.GoalID).Find(&goalModel).Error
+	// err = gs.DB.Where("id = ?", retirementModel.GoalID).Find(&goalModel).Error
 	// if err != nil {
 	// 	return nil, err
 	// }
@@ -101,7 +86,7 @@ func (rs *retirementStoreDB) Create(r *RetirementGoal) (*RetirementGoal, error) 
 	// 	id := retirementInstrument.InstrumentID
 
 	// 	instrumentModel := &savings.InstrumentModel{}
-	// 	err = rs.DB.Where("id = ?", id).Find(&instrumentModel).Error
+	// 	err = gs.DB.Where("id = ?", id).Find(&instrumentModel).Error
 	// 	if err != nil {
 	// 		return nil, err
 	// 	}
@@ -112,23 +97,23 @@ func (rs *retirementStoreDB) Create(r *RetirementGoal) (*RetirementGoal, error) 
 	return retirementModel.To(), nil
 }
 
-// GetLast ...
-func (rs *retirementStoreDB) GetLast(q *RetirementGoalQuery) (*RetirementGoal, error) {
+// GetLastRetirementGoal ...
+func (gs *goalStoreDB) GetLastRetirementGoal(q *RetirementGoalQuery) (*RetirementGoal, error) {
 	retirementModel := &RetirementGoalModel{}
 
-	err := rs.DB.Where("user_id = ?", q.UserID).Order("created_at DESC").Limit(1).First(retirementModel).Error
+	err := gs.DB.Where("user_id = ?", q.UserID).Order("created_at DESC").Limit(1).First(retirementModel).Error
 	if err != nil {
 		return nil, err
 	}
 
 	retirementModel.Goal = &GoalModel{}
-	err = rs.DB.Where("id = ?", retirementModel.GoalID.String()).Order("created_at DESC").Limit(1).First(retirementModel.Goal).Error
+	err = gs.DB.Where("id = ?", retirementModel.GoalID.String()).Order("created_at DESC").Limit(1).First(retirementModel.Goal).Error
 	if err != nil {
 		return nil, err
 	}
 
 	retirementModel.RetirementInstruments = make([]*savings.RetirementInstrumentModel, 0)
-	err = rs.DB.Where("retirement_goal_id = ?", retirementModel.Base.ID).Find(&retirementModel.RetirementInstruments).Error
+	err = gs.DB.Where("retirement_goal_id = ?", retirementModel.Base.ID).Find(&retirementModel.RetirementInstruments).Error
 	if err != nil {
 		return nil, err
 	}

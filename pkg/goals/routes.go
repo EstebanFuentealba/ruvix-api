@@ -9,17 +9,15 @@ import (
 )
 
 type handlerContext struct {
-	GoalStore           GoalStore
-	RetirementGoalStore RetirementGoalStore
-	AuthClient          *authclient.Client
+	GoalStore  GoalStore
+	AuthClient *authclient.Client
 }
 
 // Routes ...
-func Routes(r *mux.Router, ac *authclient.Client, gs GoalStore, rs RetirementGoalStore) {
+func Routes(r *mux.Router, ac *authclient.Client, gs GoalStore) {
 	// define context
 	ctx := &handlerContext{
-		GoalStore:           gs,
-		RetirementGoalStore: rs,
+		GoalStore: gs,
 	}
 
 	//

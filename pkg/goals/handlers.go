@@ -13,7 +13,7 @@ func listGoals(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(fmt.Sprintf("[Goals][List][Request] empty = %v", ""))
 
-		goals, err := ctx.GoalStore.List()
+		goals, err := ctx.GoalStore.ListGoals()
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Goals][List][Error] %v", err))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
@@ -72,7 +72,7 @@ func createGoal(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request
 
 		fmt.Println(fmt.Sprintf("[Goals][Create][Request] payload = %v", payload))
 
-		g, err := ctx.GoalStore.Create(payload.Goal)
+		g, err := ctx.GoalStore.CreateGoal(payload.Goal)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Goals][Create][Error] %v", err))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
@@ -111,7 +111,7 @@ func getLastRetirement(ctx *handlerContext) func(w http.ResponseWriter, r *http.
 
 		fmt.Println(fmt.Sprintf("[Retirement][GetLast][Request] empty = %v", ""))
 
-		retirement, err := ctx.RetirementGoalStore.GetLast(&RetirementGoalQuery{
+		retirement, err := ctx.GoalStore.GetLastRetirementGoal(&RetirementGoalQuery{
 			UserID: userID,
 		})
 		if err != nil {
@@ -189,7 +189,7 @@ func createRetirementGoal(ctx *handlerContext) func(w http.ResponseWriter, r *ht
 
 		fmt.Println(fmt.Sprintf("[Retirement][CreateRetirement][Request] payload = %v", payload))
 
-		retirement, err := ctx.RetirementGoalStore.Create(payload.Retirement)
+		retirement, err := ctx.GoalStore.CreateRetirementGoal(payload.Retirement)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Retirement][CreateRetirement][Error] %v", err))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})

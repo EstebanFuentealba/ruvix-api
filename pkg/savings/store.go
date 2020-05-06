@@ -6,8 +6,8 @@ import (
 
 // InstitutionStore service definition
 type InstitutionStore interface {
-	List() ([]*Institution, error)
-	Create(p *Institution) (*Institution, error)
+	ListInstitutions() ([]*Institution, error)
+	CreateInstitution(p *Institution) (*Institution, error)
 }
 
 type institutionStoreDB struct {
@@ -21,8 +21,8 @@ func NewInstitutionStore(db *gorm.DB) InstitutionStore {
 	}
 }
 
-// List ...
-func (is *institutionStoreDB) List() ([]*Institution, error) {
+// ListInstitutions ...
+func (is *institutionStoreDB) ListInstitutions() ([]*Institution, error) {
 	institutionModels := make([]*InstitutionModel, 0)
 
 	// Get institutions
@@ -55,8 +55,8 @@ func (is *institutionStoreDB) List() ([]*Institution, error) {
 	return institutions, nil
 }
 
-// Create ...
-func (is *institutionStoreDB) Create(i *Institution) (*Institution, error) {
+// CreateInstitution ...
+func (is *institutionStoreDB) CreateInstitution(i *Institution) (*Institution, error) {
 	model := &InstitutionModel{}
 
 	err := model.From(i)
@@ -71,52 +71,4 @@ func (is *institutionStoreDB) Create(i *Institution) (*Institution, error) {
 	}
 
 	return model.To(), nil
-}
-
-// AccountStore service definition
-type AccountStore interface {
-	// some actions..
-}
-
-type accountStoreDB struct {
-	DB *gorm.DB
-}
-
-// NewAccountStore ...
-func NewAccountStore(db *gorm.DB) AccountStore {
-	return &accountStoreDB{
-		DB: db,
-	}
-}
-
-// InstrumentStore service definition
-type InstrumentStore interface {
-	// some actions..
-}
-
-type instrumentStoreDB struct {
-	DB *gorm.DB
-}
-
-// NewInstrumentStore ...
-func NewInstrumentStore(db *gorm.DB) InstrumentStore {
-	return &instrumentStoreDB{
-		DB: db,
-	}
-}
-
-// RetirementInstrumentStore service definition
-type RetirementInstrumentStore interface {
-	// some actions...
-}
-
-type retirementInstrumentStoreDB struct {
-	DB *gorm.DB
-}
-
-// NewRetirementInstrumentStore ...
-func NewRetirementInstrumentStore(db *gorm.DB) RetirementInstrumentStore {
-	return &retirementInstrumentStoreDB{
-		DB: db,
-	}
 }

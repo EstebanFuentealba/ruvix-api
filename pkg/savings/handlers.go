@@ -12,7 +12,7 @@ func listInstitutions(ctx *handlerContext) func(w http.ResponseWriter, r *http.R
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(fmt.Sprintf("[SavingInstitutions][List][Request] empty = %v", ""))
 
-		institutions, err := ctx.InstitutionStore.List()
+		institutions, err := ctx.InstitutionStore.ListInstitutions()
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[SavingInstitutions][List][Error] %v", err))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
@@ -71,7 +71,7 @@ func createInstitution(ctx *handlerContext) func(w http.ResponseWriter, r *http.
 
 		fmt.Println(fmt.Sprintf("[SavingInstitutions][Create][Request] payload = %v", payload))
 
-		out, err := ctx.InstitutionStore.Create(payload.Institution)
+		out, err := ctx.InstitutionStore.CreateInstitution(payload.Institution)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[SavingInstitutions][Create][Error] %v", err))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})

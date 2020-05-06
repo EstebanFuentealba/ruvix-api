@@ -242,6 +242,7 @@ func (tm *TransactionModel) From(t *Transaction) error {
 
 // QuerySubscription ...
 type QuerySubscription struct {
+	ID    string
 	Price float64
 }
 

@@ -9,16 +9,14 @@ import (
 )
 
 type handlerContext struct {
-	InstitutionStore          InstitutionStore
-	RetirementInstrumentStore RetirementInstrumentStore
+	InstitutionStore InstitutionStore
 }
 
 // Routes ...
-func Routes(r *mux.Router, ac *authclient.Client, is InstitutionStore, ris RetirementInstrumentStore) {
+func Routes(r *mux.Router, ac *authclient.Client, is InstitutionStore) {
 	// define context
 	ctx := &handlerContext{
-		InstitutionStore:          is,
-		RetirementInstrumentStore: ris,
+		InstitutionStore: is,
 	}
 
 	//
