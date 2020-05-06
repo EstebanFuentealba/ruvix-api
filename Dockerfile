@@ -1,22 +1,18 @@
 # Base container for run service
-FROM alpine
+FROM scratch
 
 # Define service name
 ARG SVC=uluru-api
+ENV SVC=${SVC}
 
 # Go to workdir
-WORKDIR /src/uluru-api
+WORKDIR /src/${SVC}
 
 # Copy binaries
-COPY bin/uluru-api /usr/bin/uluru-api
-COPY bin/goose /usr/bin/goose
-COPY bin/wait-db /usr/bin/wait-db
-
-# Copy all database migrations
-COPY database/migrations/* /src/uluru-api/migrations/
+COPY bin/${SVC} /usr/bin/${SVC}
 
 # Expose service port
 EXPOSE 5000
 
 # Run service
-CMD ["/bin/sh", "-l", "-c", "wait-db && cd /src/uluru-api/migrations/ && goose postgres ${DATABASE_URL} up && uluru-api"]
+ENTRYPOINT ["uluru-api"]

@@ -29,7 +29,8 @@ services:
   # API
   #
   uluru-api:
-    image: uluru-api:0.0.11
+    container_name: uluru-api
+    build: .
     ports:
       - 5000:5000
     environment:

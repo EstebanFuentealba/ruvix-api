@@ -1,0 +1,19 @@
+version: "3"
+
+volumes:
+  uluru-postgres-data:
+    driver: local
+
+services:
+  #
+  # POSTGRES
+  #
+  uluru-postgres:
+    container_name: uluru-postgres
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - uluru-postgres-data:/var/lib/postgresql/data
