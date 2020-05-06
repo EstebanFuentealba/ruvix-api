@@ -13,11 +13,6 @@ type Goal struct {
 	DeletedAt *int64 `json:"-"`
 }
 
-// GoalQuery ...
-type GoalQuery struct {
-	ID string
-}
-
 // RetirementGoal ...
 type RetirementGoal struct {
 	ID string `json:"id"`
@@ -33,6 +28,11 @@ type RetirementGoal struct {
 	CreatedAt int64  `json:"created_at"`
 	UpdatedAt int64  `json:"updated_at"`
 	DeletedAt *int64 `json:"-"`
+}
+
+// GoalQuery ...
+type GoalQuery struct {
+	ID string
 }
 
 // RetirementGoalQuery ...

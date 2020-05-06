@@ -1,6 +1,7 @@
 package goals
 
 import (
+	"log"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -166,6 +167,33 @@ func (RetirementGoalModel) TableName() string {
 }
 
 // RunMigrations ...
-func RunMigrations(db *gorm.DB) {
-	db.AutoMigrate(&GoalModel{}, &RetirementGoalModel{})
+func RunMigrations(db *gorm.DB) error {
+	runGoalSeed := false
+	if !db.HasTable(&GoalModel{}) {
+		err := db.CreateTable(&GoalModel{}).Error
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+
+		runGoalSeed = true
+	}
+
+	if !db.HasTable(&RetirementGoalModel{}) {
+		err := db.CreateTable(&RetirementGoalModel{}).Error
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+	}
+
+	if runGoalSeed {
+		err := seedGoal(db)
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+	}
+
+	return nil
 }
