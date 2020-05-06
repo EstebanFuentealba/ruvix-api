@@ -38,6 +38,10 @@ import (
 	usermodel "github.com/jmlopezz/uluru-api/pkg/users"
 )
 
+var (
+	httpServer *http.Server
+)
+
 func main() {
 	//
 	// INITIALIZE API
@@ -145,8 +149,14 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	defer db.Close()
 
 	db.LogMode(true)
+
+	err = db.Exec("CREATE extension if not exists pgcrypto;").Error
+	if err != nil {
+		log.Fatalln(err)
+	}
 
 	// Auth (microapis/authentication-api)
 	authmodel.RunMigrations(db)
@@ -187,7 +197,9 @@ func main() {
 	log.Println("Starting HTTP service...")
 	go func() {
 		log.Println(fmt.Sprintf("HTTP service running, Listening on: %v", addr))
-		err = http.ListenAndServe(":5000", handler)
+
+		httpServer = &http.Server{Addr: addr, Handler: handler}
+		err = httpServer.ListenAndServe()
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -214,9 +226,9 @@ func listenInterrupt(quit chan struct{}) {
 
 func gracefullShutdown() {
 	log.Println("Gracefully shutdown")
-	// if err := httpServer.Shutdown(nil); err != nil {
-	// 	log.Error(err.Error())
-	// }
+	if err := httpServer.Shutdown(nil); err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {
