@@ -1,6 +1,7 @@
 package savings
 
 import (
+	"log"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -356,6 +357,57 @@ type RetirementInstrumentQuery struct {
 }
 
 // RunMigrations ...
-func RunMigrations(db *gorm.DB) {
-	db.AutoMigrate(&InstitutionModel{}, &AccountModel{}, &InstrumentModel{}, &RetirementInstrumentModel{})
+func RunMigrations(db *gorm.DB) error {
+	runInstitutionSeed := false
+	if !db.HasTable(&InstitutionModel{}) {
+		err := db.CreateTable(&InstitutionModel{}).Error
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+
+		runInstitutionSeed = true
+	}
+
+	if !db.HasTable(&AccountModel{}) {
+		err := db.CreateTable(&AccountModel{}).Error
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+	}
+
+	if !db.HasTable(&AccountModel{}) {
+		err := db.CreateTable(&AccountModel{}).Error
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+	}
+
+	if !db.HasTable(&InstrumentModel{}) {
+		err := db.CreateTable(&InstrumentModel{}).Error
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+	}
+
+	if !db.HasTable(&RetirementInstrumentModel{}) {
+		err := db.CreateTable(&RetirementInstrumentModel{}).Error
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+	}
+
+	if runInstitutionSeed {
+		err := seedInstitution(db)
+		if err != nil {
+			log.Fatalln(err)
+			return err
+		}
+	}
+
+	return nil
 }
