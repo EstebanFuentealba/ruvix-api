@@ -14,6 +14,7 @@ func FactoryCreate(addr string, options uluru.ClientOptions) (*Profile, *Profile
 	}
 
 	before := &Profile{
+		Fingerprint:   "",
 		Age:           18,
 		Birth:         2000,
 		MaritalStatus: "single",
@@ -37,6 +38,7 @@ func FactoryGet(addr string, options uluru.ClientOptions) (*Profile, *Profile, e
 	}
 
 	before := &Profile{
+		Fingerprint:   "",
 		Age:           18,
 		Birth:         2000,
 		MaritalStatus: "single",
@@ -72,6 +74,7 @@ func FactoryUpdate(addr string, options uluru.ClientOptions) (*Profile, *Profile
 	time.Sleep(1 * time.Second)
 
 	after, err := pc.Update(&Profile{
+		Fingerprint:   "",
 		Age:           31,
 		Birth:         2005,
 		MaritalStatus: "married",

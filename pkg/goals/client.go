@@ -130,9 +130,9 @@ func (c *Client) Create(g *Goal) (*Goal, error) {
 	return rr.Data, nil
 }
 
-// GetRetirement ...
-func (c *Client) GetRetirement() (*RetirementGoal, error) {
-	url := fmt.Sprintf("%s/goals/retirements", c.environment)
+// GetLastRetirement ...
+func (c *Client) GetLastRetirement() (*RetirementGoal, error) {
+	url := fmt.Sprintf("%s/goals/retirements/last", c.environment)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -189,6 +189,82 @@ func (c *Client) CreateRetirement(ret *RetirementGoal) (*RetirementGoal, error) 
 	if c.token != "" {
 		req.Header.Add("Authorization", c.token)
 	}
+
+	res, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	rr := struct {
+		Data  *RetirementGoal `json:"data"`
+		Error *string         `json:"error"`
+	}{}
+
+	if err := json.NewDecoder(res.Body).Decode(&rr); err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if rr.Error != nil {
+		return nil, errors.New(*rr.Error)
+	}
+
+	return rr.Data, nil
+}
+
+// GetLastGuestRetirement ...
+func (c *Client) GetLastGuestRetirement(fingerprint string) (*RetirementGoal, error) {
+	url := fmt.Sprintf("%s/goals/guest-retirements/%s/last", c.environment, fingerprint)
+
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", "application/json; charset=utf-8")
+
+	res, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	rr := struct {
+		Data  *RetirementGoal `json:"data"`
+		Error *string         `json:"error"`
+	}{}
+
+	if err := json.NewDecoder(res.Body).Decode(&rr); err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+
+	if rr.Error != nil {
+		return nil, errors.New(*rr.Error)
+	}
+
+	return rr.Data, nil
+}
+
+// CreateGuestRetirement ...
+func (c *Client) CreateGuestRetirement(ret *RetirementGoal) (*RetirementGoal, error) {
+	r := struct {
+		Retirement *RetirementGoal `json:"retirement"`
+	}{
+		Retirement: ret,
+	}
+
+	b, err := json.Marshal(&r)
+	if err != nil {
+		return nil, err
+	}
+
+	url := fmt.Sprintf("%s/goals/guest-retirements", c.environment)
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(b))
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", "application/json; charset=utf-8")
 
 	res, err := c.client.Do(req)
 	if err != nil {

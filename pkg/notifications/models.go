@@ -1,7 +1,7 @@
 package notifications
 
 import (
-	"github.com/jmlopezz/uluru-api/database"
+	"github.com/jmlopezz/uluru-api/internal/database"
 )
 
 // Notification

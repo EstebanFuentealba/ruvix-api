@@ -11,6 +11,7 @@ type GoalStore interface {
 	CreateGoal(p *Goal) (*Goal, error)
 	CreateRetirementGoal(p *RetirementGoal) (*RetirementGoal, error)
 	GetLastRetirementGoal(q *RetirementGoalQuery) (*RetirementGoal, error)
+	GetLastGuestRetirementGoal(q *RetirementGoalQuery) (*RetirementGoal, error)
 }
 
 type goalStoreDB struct {
@@ -62,6 +63,8 @@ func (gs *goalStoreDB) CreateGoal(g *Goal) (*Goal, error) {
 func (gs *goalStoreDB) CreateRetirementGoal(r *RetirementGoal) (*RetirementGoal, error) {
 	retirementModel := &RetirementGoalModel{}
 
+	// TODO(ca): check if exist goal id db using r.GoalID
+
 	err := retirementModel.From(r)
 	if err != nil {
 		return nil, err
@@ -102,6 +105,32 @@ func (gs *goalStoreDB) GetLastRetirementGoal(q *RetirementGoalQuery) (*Retiremen
 	retirementModel := &RetirementGoalModel{}
 
 	err := gs.DB.Where("user_id = ?", q.UserID).Order("created_at DESC").Limit(1).First(retirementModel).Error
+	if err != nil {
+		return nil, err
+	}
+
+	retirementModel.Goal = &GoalModel{}
+	err = gs.DB.Where("id = ?", retirementModel.GoalID.String()).Order("created_at DESC").Limit(1).First(retirementModel.Goal).Error
+	if err != nil {
+		return nil, err
+	}
+
+	retirementModel.RetirementInstruments = make([]*savings.RetirementInstrumentModel, 0)
+	err = gs.DB.Where("retirement_goal_id = ?", retirementModel.Base.ID).Find(&retirementModel.RetirementInstruments).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return retirementModel.To(), nil
+}
+
+// GetLastGuestRetirementGoal ...
+func (gs *goalStoreDB) GetLastGuestRetirementGoal(q *RetirementGoalQuery) (*RetirementGoal, error) {
+	retirementModel := &RetirementGoalModel{}
+
+	// TODO(ca): check if exist goal id db using r.GoalID
+
+	err := gs.DB.Where("fingerprint = ?", q.Fingerprint).Order("created_at DESC").Limit(1).First(retirementModel).Error
 	if err != nil {
 		return nil, err
 	}

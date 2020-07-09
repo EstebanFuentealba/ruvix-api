@@ -188,6 +188,12 @@ func TestCreateRetirementGoal(t *testing.T) {
 		return
 	}
 
+	expected = after.Fingerprint
+	if expected != before.Fingerprint {
+		t.Errorf("%s: before.Fingerprint(\"\") failed, expected %v, got %v", testName, expected, before.Fingerprint)
+		return
+	}
+
 	expected = after.GoalID
 	if expected != before.GoalID {
 		t.Errorf("%s: before.GoalID(\"\") failed, expected %v, got %v", testName, expected, before.GoalID)
@@ -219,8 +225,8 @@ func TestCreateRetirementGoal(t *testing.T) {
 	}
 }
 
-func TestGetRetirementGoal(t *testing.T) {
-	testName := "TestGetRetirementGoal"
+func TestGetLastRetirementGoal(t *testing.T) {
+	testName := "TestGetLastRetirementGoal"
 
 	addr, authAddr, err := before()
 	if err != nil {
@@ -239,9 +245,9 @@ func TestGetRetirementGoal(t *testing.T) {
 		Environment: "development",
 	}
 
-	before, after, err := goals.FactoryGetRetirementGoal(addr, opts)
+	before, after, err := goals.FactoryGetLastRetirementGoal(addr, opts)
 	if err != nil {
-		t.Errorf("%s: goals.FactoryGetRetirementGoal(addr, opts) failed: %s", testName, err.Error())
+		t.Errorf("%s: goals.FactoryGetLastRetirementGoal(addr, opts) failed: %s", testName, err.Error())
 		return
 	}
 
@@ -254,6 +260,12 @@ func TestGetRetirementGoal(t *testing.T) {
 	expected = after.UserID
 	if expected != before.UserID {
 		t.Errorf("%s: before.UserID(\"\") failed, expected %v, got %v", testName, expected, before.UserID)
+		return
+	}
+
+	expected = after.Fingerprint
+	if expected != before.Fingerprint {
+		t.Errorf("%s: before.Fingerprint(\"\") failed, expected %v, got %v", testName, expected, before.Fingerprint)
 		return
 	}
 
@@ -284,6 +296,81 @@ func TestGetRetirementGoal(t *testing.T) {
 	expectedBigNum = after.UpdatedAt
 	if expectedBigNum != before.UpdatedAt {
 		t.Errorf("%s: UpdatedAt(\"\") failed, expectedBigNum %v, got %v", testName, expectedBigNum, before.UpdatedAt)
+		return
+	}
+}
+
+func TestCreateGuestRetirementGoal(t *testing.T) {
+	testName := "TestCreateGuestRetirementGoal"
+
+	addr, authAddr, err := before()
+	if err != nil {
+		t.Errorf("%s: before() failed: %v", testName, err.Error())
+		return
+	}
+
+	user, err := util.FactoryNewAuth(authAddr)
+	if err != nil {
+		t.Errorf("%s: util.FactoryNewAuth(authAddr) failed: %v", testName, err.Error())
+		return
+	}
+
+	opts := uluru.ClientOptions{
+		Token:       user.Meta.Token,
+		Environment: "development",
+	}
+
+	before, after, err := goals.FactoryCreateGuestRetirementGoal(addr, opts)
+	if err != nil {
+		t.Errorf("%s: goals.FactoryCreateGuestRetirementGoal(addr, opts) failed: %v", testName, err.Error())
+		return
+	}
+
+	expected := after.ID
+	if expected == before.ID {
+		t.Errorf("%s: before.ID(\"\") failed, expected %v, got %v", testName, expected, before.ID)
+		return
+	}
+
+	expected = after.UserID
+	if expected != before.UserID {
+		t.Errorf("%s: before.UserID(\"\") failed, expected %v, got %v", testName, expected, before.UserID)
+		return
+	}
+
+	expected = after.Fingerprint
+	if expected != before.Fingerprint {
+		t.Errorf("%s: before.Fingerprint(\"\") failed, expected %v, got %v", testName, expected, before.Fingerprint)
+		return
+	}
+
+	expected = after.GoalID
+	if expected != before.GoalID {
+		t.Errorf("%s: before.GoalID(\"\") failed, expected %v, got %v", testName, expected, before.GoalID)
+		return
+	}
+
+	expectedFloatNum := after.MonthlySalary
+	if expectedFloatNum != before.MonthlySalary {
+		t.Errorf("%s: before.MonthlySalary(\"\") failed, expectedFloatNum %v, got %v", testName, expectedFloatNum, before.MonthlySalary)
+		return
+	}
+
+	expectedFloatNum = after.MonthlyRetirement
+	if expectedFloatNum != before.MonthlyRetirement {
+		t.Errorf("%s: before.MonthlyRetirement(\"\") failed, expectedFloatNum %v, got %v", testName, expectedFloatNum, before.MonthlyRetirement)
+		return
+	}
+
+	expectedBigNum := after.CreatedAt
+	if expectedBigNum == before.CreatedAt {
+		t.Errorf("%s: before.CreatedAt(\"\") failed, expectedBigNum %v, got %v", testName, expectedBigNum, before.CreatedAt)
+		return
+	}
+
+	expectedBigNum = after.UpdatedAt
+	if expectedBigNum == before.UpdatedAt {
+		t.Errorf("%s: before.UpdatedAt(\"\") failed, expectedBigNum %v, got %v", testName, expectedBigNum, before.UpdatedAt)
 		return
 	}
 }

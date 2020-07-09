@@ -76,6 +76,12 @@ func TestGetProfile(t *testing.T) {
 		return
 	}
 
+	expected = after.Fingerprint
+	if expected != before.Fingerprint {
+		t.Errorf("%s: before.Fingerprint(\"\") failed, expected %v, got %v", testName, expected, before.Fingerprint)
+		return
+	}
+
 	expectedNum := after.Age
 	if expectedNum != before.Age {
 		t.Errorf("%s: before.Age(\"\") failed, expected %v, got %v", testName, expectedNum, before.Age)
@@ -153,6 +159,12 @@ func TestUpdateProfile(t *testing.T) {
 	expected = after.UserID
 	if expected != before.UserID {
 		t.Errorf("%s: before.UserID(\"\") failed, expected %v, got %v", testName, expected, before.UserID)
+		return
+	}
+
+	expected = after.Fingerprint
+	if expected != before.Fingerprint {
+		t.Errorf("%s: before.Fingerprint(\"\") failed, expected %v, got %v", testName, expected, before.Fingerprint)
 		return
 	}
 
@@ -234,6 +246,12 @@ func TestCreateProfile(t *testing.T) {
 	expected = after.UserID
 	if expected == before.UserID {
 		t.Errorf("%s: before.UserID(\"\") failed, expected %v, got %v", testName, expected, before.UserID)
+		return
+	}
+
+	expected = after.Fingerprint
+	if expected != before.Fingerprint {
+		t.Errorf("%s: before.Fingerprint(\"\") failed, expected %v, got %v", testName, expected, before.Fingerprint)
 		return
 	}
 

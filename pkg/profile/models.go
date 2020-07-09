@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"github.com/jmlopezz/uluru-api/database"
+	"github.com/jmlopezz/uluru-api/internal/database"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -13,6 +13,7 @@ type Model struct {
 	database.Base
 
 	UserID        string `gorm:"not null;"`
+	Fingerprint   string
 	Age           int    `gorm:"not null;"`
 	Birth         int    `gorm:"not null;"`
 	MaritalStatus string `gorm:"not null;"`
@@ -29,6 +30,7 @@ func (Model) TableName() string {
 func (m *Model) To() *Profile {
 	p := &Profile{
 		UserID:        m.UserID,
+		Fingerprint:   m.Fingerprint,
 		Age:           m.Age,
 		Birth:         m.Birth,
 		MaritalStatus: m.MaritalStatus,
@@ -64,6 +66,7 @@ func (m *Model) From(p *Profile) error {
 	}
 
 	m.UserID = p.UserID
+	m.Fingerprint = p.Fingerprint
 	m.Age = p.Age
 	m.Birth = p.Birth
 	m.MaritalStatus = p.MaritalStatus

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"github.com/jmlopezz/uluru-api/database"
+	"github.com/jmlopezz/uluru-api/internal/database"
 
 	uuid "github.com/satori/go.uuid"
 )

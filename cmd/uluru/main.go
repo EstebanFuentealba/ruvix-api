@@ -11,7 +11,7 @@ import (
 	"syscall"
 
 	"github.com/gorilla/mux"
-	"github.com/jmlopezz/uluru-api/template"
+	"github.com/jmlopezz/uluru-api/internal/template"
 	"github.com/rs/cors"
 
 	a "github.com/microapis/authentication-api"
@@ -29,7 +29,7 @@ import (
 
 	afpsimulatorHTTP "github.com/jmlopezz/afp-simulator/http"
 
-	"github.com/jmlopezz/uluru-api/database"
+	"github.com/jmlopezz/uluru-api/internal/database"
 	authmodel "github.com/jmlopezz/uluru-api/pkg/auth"
 	"github.com/jmlopezz/uluru-api/pkg/goals"
 	"github.com/jmlopezz/uluru-api/pkg/profile"
@@ -244,6 +244,7 @@ func gracefullShutdown() {
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Println("LALALALA")
 		log.Println(r.RequestURI, r.Method)
 		next.ServeHTTP(w, r)
 	})

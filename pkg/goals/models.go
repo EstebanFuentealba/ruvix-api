@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"github.com/jmlopezz/uluru-api/database"
+	"github.com/jmlopezz/uluru-api/internal/database"
 	"github.com/jmlopezz/uluru-api/pkg/savings"
 	uuid "github.com/satori/go.uuid"
 )
@@ -68,7 +68,8 @@ type RetirementGoalModel struct {
 	Goal                  *GoalModel                           `gorm:"NOT NULL;foreignkey:Base.ID"`
 	RetirementInstruments []*savings.RetirementInstrumentModel `gorm:"NOT NULL;foreignkey:RetirementGoalID"`
 
-	UserID            string    `gorm:"NOT NULL;"`
+	UserID            string
+	Fingerprint       string
 	GoalID            uuid.UUID `gorm:"NOT NULL;"`
 	MonthlySalary     float64   `gorm:"NOT NULL;"`
 	MonthlyRetirement float64   `gorm:"NOT NULL;"`
@@ -80,6 +81,7 @@ func (rm *RetirementGoalModel) To() *RetirementGoal {
 		ID: rm.Base.ID.String(),
 
 		UserID:            rm.UserID,
+		Fingerprint:       rm.Fingerprint,
 		GoalID:            rm.GoalID.String(),
 		MonthlySalary:     rm.MonthlySalary,
 		MonthlyRetirement: rm.MonthlyRetirement,
@@ -155,6 +157,7 @@ func (rm *RetirementGoalModel) From(r *RetirementGoal) error {
 	}
 
 	rm.UserID = r.UserID
+	rm.Fingerprint = r.Fingerprint
 	rm.MonthlySalary = r.MonthlySalary
 	rm.MonthlyRetirement = r.MonthlyRetirement
 

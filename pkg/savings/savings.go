@@ -65,7 +65,8 @@ type RetirementInstrument struct {
 
 	InstrumentID     string  `json:"instrument_id"`
 	RetirementGoalID string  `json:"retirement_goal_id"`
-	UserID           string  `json:"user_id"`
+	UserID           string  `json:"user_id,omitempty"`
+	Fingerprint      string  `json:"fingerprint,omitempty"`
 	Percent          float64 `json:"percent"`
 	QuotasQuantity   float64 `json:"quotas_quantity"`
 	QuotasDate       string  `json:"quotas_date"`

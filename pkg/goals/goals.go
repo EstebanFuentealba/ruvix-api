@@ -20,7 +20,8 @@ type RetirementGoal struct {
 	Goal                  *Goal                           `json:"goal,omitempty"`
 	RetirementInstruments []*savings.RetirementInstrument `json:"retirement_instruments,omitempty"`
 
-	UserID            string  `json:"user_id"`
+	UserID            string  `json:"user_id,omitempty"`
+	Fingerprint       string  `json:"fingerprint,omitempty"`
 	GoalID            string  `json:"goal_id"`
 	MonthlySalary     float64 `json:"monthly_salary"`
 	MonthlyRetirement float64 `json:"monthly_retirement"`
@@ -37,5 +38,6 @@ type GoalQuery struct {
 
 // RetirementGoalQuery ...
 type RetirementGoalQuery struct {
-	UserID string
+	Fingerprint string
+	UserID      string
 }

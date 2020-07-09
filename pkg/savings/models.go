@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"github.com/jmlopezz/uluru-api/database"
+	"github.com/jmlopezz/uluru-api/internal/database"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -257,12 +257,13 @@ type RetirementInstrumentModel struct {
 
 	InstrumentID     uuid.UUID `gorm:"type:uuid;NOT NULL"`
 	RetirementGoalID uuid.UUID `gorm:"type:uuid;NOT NULL"`
-	UserID           string    `gorm:"type:uuid;NOT NULL"`
-	Percent          float64   `gorm:"NOT NULL"`
-	QuotasQuantity   float64   `gorm:"NOT NULL"`
-	QuotasDate       string    `gorm:"NOT NULL"`
-	QuotasPrice      float64   `gorm:"NOT NULL"`
-	Balance          float64   `gorm:"NOT NULL"`
+	UserID           string
+	Fingerprint      string
+	Percent          float64 `gorm:"NOT NULL"`
+	QuotasQuantity   float64 `gorm:"NOT NULL"`
+	QuotasDate       string  `gorm:"NOT NULL"`
+	QuotasPrice      float64 `gorm:"NOT NULL"`
+	Balance          float64 `gorm:"NOT NULL"`
 }
 
 // TableName Set table name
@@ -277,6 +278,7 @@ func (rim *RetirementInstrumentModel) To() *RetirementInstrument {
 		InstrumentID:     rim.InstrumentID.String(),
 		RetirementGoalID: rim.RetirementGoalID.String(),
 		UserID:           rim.UserID,
+		Fingerprint:      rim.Fingerprint,
 		Percent:          rim.Percent,
 		QuotasQuantity:   rim.QuotasQuantity,
 		QuotasDate:       rim.QuotasDate,
@@ -342,6 +344,7 @@ func (rim *RetirementInstrumentModel) From(ri *RetirementInstrument) error {
 	}
 
 	rim.UserID = ri.UserID
+	rim.Fingerprint = ri.Fingerprint
 	rim.Percent = ri.Percent
 	rim.QuotasQuantity = ri.QuotasQuantity
 	rim.QuotasDate = ri.QuotasDate

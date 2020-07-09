@@ -19,6 +19,7 @@ type Profile struct {
 	ID string `json:"id"`
 
 	UserID        string `json:"user_id"`
+	Fingerprint   string `json:"fingerprint,omitempty"`
 	Age           int    `json:"age"`
 	Birth         int    `json:"birth"`
 	MaritalStatus string `json:"marital_status"`
