@@ -19,7 +19,7 @@ func seedSubscription(db *gorm.DB) error {
 		return err
 	}
 
-	path := fmt.Sprintf("%s/misc/seeds/subscriptions.json", pwd)
+	path := fmt.Sprintf("%s/subscriptions.json", pwd)
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
 		return err
