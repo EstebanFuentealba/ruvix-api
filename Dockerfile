@@ -1,5 +1,5 @@
-# Base container for run service
-FROM scratch
+# # Base container for run service
+FROM alpine:latest
 
 # Define service name
 ARG SVC=uluru-api

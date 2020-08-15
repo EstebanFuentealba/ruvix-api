@@ -4,8 +4,7 @@
 #				- DOCKER_USER
 #				- DOCKER_PASS
 #
-VERSION=0.0.13
-LAST_VERSION=0.0.12
+VERSION=0.0.17
 NAME=uluru
 SVC=$(NAME)-api
 BIN_PATH=$(PWD)/bin
@@ -196,7 +195,7 @@ test-email te:
 	 PORT=$(EMAIL_PORT) \
 	 go test -count=1 -v $(GOPATH)/src/github.com/microapis/email-api/client/email_test.go
 
-test t: test-users test-authentication test-profile test-savings test-goals test-subscriptions
+test t: test-users test-authentication test-profile test-savings test-goals
 
 template tmpl:
 	@echo "[template] Generating..."
