@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	subscriptionCallbackURL = "https://callback/resultado/de/transaccion"
-	subscriptionBillURL     = "https://callback/final/post/comprobante/webpay"
+	subscriptionCallbackURL = "http://localhost:9000/subscription/payment"
+	subscriptionBillURL     = "http://localhost:9000/final/post/comprobante/webpay"
 	webpayURL               = "https://webpay3gint.transbank.cl/webpayserver/initTransaction?token_ws="
 )
 
