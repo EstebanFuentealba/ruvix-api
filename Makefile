@@ -4,7 +4,7 @@
 #				- DOCKER_USER
 #				- DOCKER_PASS
 #
-VERSION=0.0.18
+VERSION=0.0.19
 NAME=uluru
 SVC=$(NAME)-api
 BIN_PATH=$(PWD)/bin
