@@ -756,8 +756,7 @@
 							"script": {
 								"id": "48016461-8535-40d3-a03d-ac31d969ab61",
 								"exec": [
-									"var data = pm.response.json().data;",
-									"postman.setEnvironmentVariable(\"subscription_id\", data.id);"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -819,8 +818,7 @@
 							"script": {
 								"id": "2084c11b-f04a-48b4-87cd-42d6f87d9e17",
 								"exec": [
-									"var data = pm.response.json().data;",
-									"postman.setEnvironmentVariable(\"subscription_id\", data.id);"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -1538,6 +1536,16 @@
 							"listen": "prerequest",
 							"script": {
 								"id": "51589474-8c7a-4aec-9481-a1bd36021f2e",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "e9922720-858a-4cbb-9c3b-b594985c695a",
 								"exec": [
 									"var data = pm.response.json().data;",
 									"postman.setEnvironmentVariable(\"goal_id\", data[0].id);"
