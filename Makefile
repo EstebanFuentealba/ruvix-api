@@ -4,7 +4,7 @@
 #				- DOCKER_USER
 #				- DOCKER_PASS
 #
-VERSION=0.0.19
+VERSION=0.0.21
 NAME=uluru
 SVC=$(NAME)-api
 BIN_PATH=$(PWD)/bin
@@ -201,7 +201,7 @@ template tmpl:
 	@echo "[template] Generating..."
 	@qtc template
 
-deploy de: docker
+deploy: linux
 	@echo "[deploy] Deploying to $(VERSION) version..."
 	@git push dokku master
 
