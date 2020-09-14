@@ -14,8 +14,5 @@ COPY misc/seeds/goals.json goals.json
 COPY misc/seeds/institutions.json institutions.json
 COPY misc/seeds/subscriptions.json subscriptions.json
 
-# Expose service port
-EXPOSE 5000
-
 # Run service
 ENTRYPOINT ["uluru-api"]
