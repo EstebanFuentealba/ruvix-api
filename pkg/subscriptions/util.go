@@ -17,7 +17,7 @@ import (
 // TODO: the following values should read from ENV values
 const (
 	subscriptionCallbackURL           = "http://localhost:5000/api/v1/subscriptions/payment_callback"
-	subscriptionCallbackURLProduction = "https://api.pensionatebien.cl/subscriptions/payment_callback"
+	subscriptionCallbackURLProduction = "https://api.pensionatebien.cl/api/v1/subscriptions/payment_callback"
 	subscriptionBillURL               = "http://localhost:5000/final/post/comprobante/webpay"
 	subscriptionBillURLProduction     = "https://api.pensionatebien.cl/final/post/comprobante/webpay"
 	webpayURL                         = "https://webpay3gint.transbank.cl/webpayserver/initTransaction?token_ws="
