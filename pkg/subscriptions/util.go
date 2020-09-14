@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/context"
@@ -13,10 +14,16 @@ import (
 	"github.com/microapis/transbank-sdk-golang/pkg/webpay"
 )
 
+// TODO: the following values should read from ENV values
 const (
-	subscriptionCallbackURL = "http://localhost:9000/subscription/payment"
-	subscriptionBillURL     = "http://localhost:9000/final/post/comprobante/webpay"
-	webpayURL               = "https://webpay3gint.transbank.cl/webpayserver/initTransaction?token_ws="
+	subscriptionCallbackURL           = "http://localhost:5000/api/v1/subscriptions/payment_callback"
+	subscriptionCallbackURLProduction = "https://api.pensionatebien.cl/subscriptions/payment_callback"
+	subscriptionBillURL               = "http://localhost:5000/final/post/comprobante/webpay"
+	subscriptionBillURLProduction     = "https://api.pensionatebien.cl/final/post/comprobante/webpay"
+	webpayURL                         = "https://webpay3gint.transbank.cl/webpayserver/initTransaction?token_ws="
+	webpayURLProduction               = "https://webpay3gint.transbank.cl/webpayserver/initTransaction?token_ws="
+	redirectURL                       = "http://localhost:9000/subscription/payment"
+	redirectURLProduction             = "https://www.pensionatebien.cl/subscription/payment"
 )
 
 // GetSubscriptionIDParam ...
@@ -78,8 +85,16 @@ func PaymentToken(t *Transaction) (string, error) {
 
 // PaymentURL ...
 func PaymentURL(t *Transaction) string {
+	var url string
+	environment := os.Getenv("ENVIRONMENT")
+	if environment == "production" {
+		url = webpayURLProduction
+	} else {
+		url = webpayURL
+	}
+
 	if t.ProviderID == ProviderWebpayPlusNormal {
-		return fmt.Sprintf("%s%s", webpayURL, t.PaymentToken)
+		return fmt.Sprintf("%s%s", url, t.PaymentToken)
 	}
 
 	return ""
@@ -94,16 +109,22 @@ func PaymentVerify(t *Transaction) error {
 	return nil
 }
 
-func free(t *Transaction) (string, error) {
-	return subscriptionCallbackURL, nil
-}
-
 func webpayPlusToken(t *Transaction) (string, error) {
+	var returnURL string
+	var finalURL string
+
+	environment := os.Getenv("ENVIRONMENT")
+	if environment == "production" {
+		returnURL = subscriptionCallbackURLProduction
+		finalURL = subscriptionBillURLProduction
+	} else {
+		returnURL = subscriptionCallbackURL
+		finalURL = subscriptionBillURL
+	}
+
 	amount := t.Subscription.Price * float64(t.Subscription.Months)
 	sessionID := t.OrderNumber
 	buyOrder := t.OrderNumber
-	returnURL := subscriptionCallbackURL
-	finalURL := subscriptionBillURL
 
 	service := webpay.NewIntegrationPlusNormal()
 	transaction, err := service.InitTransaction(transbank.InitTransaction{
@@ -156,4 +177,18 @@ func ValidProvider(provider string) bool {
 	}
 
 	return false
+}
+
+// GetPaymentRedirectURL ...
+func GetPaymentRedirectURL() string {
+	var url string
+
+	environment := os.Getenv("ENVIRONMENT")
+	if environment == "production" {
+		url = redirectURLProduction
+	} else {
+		url = redirectURL
+	}
+
+	return url
 }

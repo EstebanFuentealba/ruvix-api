@@ -29,6 +29,8 @@ func Routes(r *mux.Router, ac *authclient.Client, ss SubscriptionStore) {
 	p.HandleFunc("", listSubscriptions(ctx)).Methods(http.MethodGet, http.MethodOptions)
 	// GET /api/v1/subscriptions/providers
 	p.HandleFunc("/providers", listProviders(ctx)).Methods(http.MethodGet, http.MethodOptions)
+	// GET /api/v1/subscriptions/providers
+	p.HandleFunc("/payment_callback", paymentWebhook(ctx)).Methods(http.MethodPost, http.MethodOptions)
 
 	//
 	// ADMIN ROUTES

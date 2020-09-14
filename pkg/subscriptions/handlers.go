@@ -4,7 +4,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/context"
 	"github.com/jmlopezz/uluru-api"
@@ -16,7 +19,7 @@ func listSubscriptions(ctx *handlerContext) func(w http.ResponseWriter, r *http.
 
 		subscriptions, err := ctx.SubscriptionStore.ListSubscriptions()
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][List][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][List][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -30,7 +33,7 @@ func listSubscriptions(ctx *handlerContext) func(w http.ResponseWriter, r *http.
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][List][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][List][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -44,7 +47,7 @@ func listProviders(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 
 		providers, err := ctx.SubscriptionStore.ListProviders()
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[SubscriptionsProviders][List][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[SubscriptionsProviders][List][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -58,11 +61,31 @@ func listProviders(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
-			fmt.Println(fmt.Sprintf("[SubscriptionsProviders][List][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[SubscriptionsProviders][List][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
+	}
+}
+
+func paymentWebhook(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println(fmt.Sprintf("[Subscriptions][PaymentWebhook][Request] empty = %v", ""))
+
+		body, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			fmt.Println(fmt.Sprintf("[Subscriptions][PaymentWebhook][Error] %v", err.Error()))
+			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			http.Error(w, string(b), http.StatusInternalServerError)
+			return
+		}
+		log.Println(string(body))
+
+		url := GetPaymentRedirectURL()
+		http.Redirect(w, r, url, http.StatusMovedPermanently)
+
+		fmt.Println("[Subscriptions][PaymentWebhook][Response]")
 	}
 }
 
@@ -75,7 +98,7 @@ func createSubscription(ctx *handlerContext) func(w http.ResponseWriter, r *http
 		}{}
 
 		if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -109,7 +132,7 @@ func createSubscription(ctx *handlerContext) func(w http.ResponseWriter, r *http
 
 		out, err := ctx.SubscriptionStore.CreateSubscription(payload.Subscription)
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -123,7 +146,7 @@ func createSubscription(ctx *handlerContext) func(w http.ResponseWriter, r *http
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -148,7 +171,7 @@ func listTransactions(ctx *handlerContext) func(w http.ResponseWriter, r *http.R
 			UserID: userID,
 		})
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][List][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][List][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -162,7 +185,7 @@ func listTransactions(ctx *handlerContext) func(w http.ResponseWriter, r *http.R
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
-			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][List][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][List][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -197,7 +220,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 		}{}
 
 		if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -228,7 +251,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 			ProviderID:     payload.Subscribe.ProviderID,
 		})
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -237,7 +260,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 		// get payment token
 		token, err := PaymentToken(transaction)
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -246,7 +269,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 		transaction.PaymentToken = token
 		t, err := ctx.SubscriptionStore.UpdateTransaction(transaction)
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -267,7 +290,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -303,7 +326,7 @@ func unsubscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Reques
 			SubscriptionID: subscriptionID,
 		})
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Unsubscribe][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Unsubscribe][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -317,7 +340,7 @@ func unsubscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Reques
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Unsubscribe][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Unsubscribe][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -354,7 +377,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		}{}
 
 		if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -385,7 +408,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 			ProviderID:     payload.Refresh.ProviderID,
 		})
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -394,7 +417,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		// get payment token
 		token, err := PaymentToken(transaction)
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -403,7 +426,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		transaction.PaymentToken = token
 		t, err := ctx.SubscriptionStore.UpdateTransaction(transaction)
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -424,7 +447,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -447,7 +470,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 
 		lastTransaction, err := ctx.SubscriptionStore.LastTransaction(userID)
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -455,7 +478,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 
 		if lastTransaction.Status == StatusTransactionCompleted {
 			err := errors.New("transaction status already complete")
-			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -463,7 +486,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 
 		if lastTransaction.ProviderID == ProviderFree {
 			err := fmt.Errorf("provider_id cannot be %s when subscription price is free", lastTransaction.ProviderID)
-			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -471,7 +494,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 
 		if lastTransaction.PaymentToken == "" {
 			err := errors.New("undefined payment_token")
-			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -479,16 +502,21 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 
 		err = PaymentVerify(lastTransaction)
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
-			http.Error(w, string(b), http.StatusInternalServerError)
-			return
+			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err.Error()))
+			if strings.Contains(err.Error(), "rejected") {
+				lastTransaction.Status = StatusTransactionRejected
+			} else {
+				b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+				http.Error(w, string(b), http.StatusInternalServerError)
+				return
+			}
+		} else {
+			lastTransaction.Status = StatusTransactionCompleted
 		}
 
-		lastTransaction.Status = StatusTransactionCompleted
 		transaction, err := ctx.SubscriptionStore.UpdateTransaction(lastTransaction)
 		if err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error7] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -502,7 +530,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
-			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error8] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -525,8 +553,7 @@ func lastTransaction(ctx *handlerContext) func(w http.ResponseWriter, r *http.Re
 
 		transaction, err := ctx.SubscriptionStore.LastTransaction(userID)
 		if err != nil {
-			fmt.Println(99988877755)
-			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][Last][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][Last][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
@@ -540,7 +567,7 @@ func lastTransaction(ctx *handlerContext) func(w http.ResponseWriter, r *http.Re
 
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
-			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][Last][Error] %v", err))
+			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][Last][Error] %v", err.Error()))
 			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
