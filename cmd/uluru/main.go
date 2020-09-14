@@ -48,6 +48,10 @@ func main() {
 	//
 	// INITIALIZE API
 	//
+	environment := os.Getenv("ENVIRONMENT")
+	if environment == "" {
+		log.Fatalln("missing env variable ENVIRONMENT")
+	}
 	postgresDSN := os.Getenv("DATABASE_URL")
 	if postgresDSN == "" {
 		log.Fatalln("missing env variable DATABASE_URL")
@@ -244,7 +248,6 @@ func gracefullShutdown() {
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Println("LALALALA")
 		log.Println(r.RequestURI, r.Method)
 		next.ServeHTTP(w, r)
 	})
