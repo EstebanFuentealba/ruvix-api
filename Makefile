@@ -4,7 +4,7 @@
 #				- DOCKER_USER
 #				- DOCKER_PASS
 #
-VERSION=0.0.21
+VERSION=0.0.22
 NAME=uluru
 SVC=$(NAME)-api
 BIN_PATH=$(PWD)/bin
@@ -17,6 +17,7 @@ GOPATH=$(HOME)/go
 #
 HOST=localhost
 PORT=5000
+ENVIRONMENT=development
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable
 
 #
@@ -49,6 +50,7 @@ run r:
 	@echo "[running] Running service..."
 	@HOST=$(HOST) \
 	PORT=$(PORT) \
+	ENVIRONMENT=$(ENVIRONMENT) \
 	DATABASE_URL=$(DATABASE_URL) \
 	JWT_SECRET=$(JWT_SECRET) \
 	USERS_HOST=$(USERS_HOST) \
