@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/microapis/email-api"
-	emailClient "github.com/microapis/email-api/client"
-	"github.com/microapis/users-api"
+	"github.com/cagodoy/ruvix-api/pkg/pigeon/email"
+	"github.com/cagodoy/ruvix-api/pkg/users"
 )
 
 // VerifyEmailTemplate ...
-func VerifyEmailTemplate(ec *emailClient.Client) func(u *users.User, token string) error {
+func VerifyEmailTemplate(es *email.Service) func(u *users.User, token string) error {
 	return func(u *users.User, token string) error {
 		// define template intepolation values
 		vet := VerifyEmailValues{
@@ -23,7 +22,7 @@ func VerifyEmailTemplate(ec *emailClient.Client) func(u *users.User, token strin
 		str := VerifyEmail(vet)
 
 		// send email with token and url
-		id, err := ec.Send(&email.Message{
+		id, err := es.Send(&email.Message{
 			From:     "no-reply@microapis.dev",
 			FromName: u.Name,
 			To:       []string{u.Email},
@@ -36,7 +35,6 @@ func VerifyEmailTemplate(ec *emailClient.Client) func(u *users.User, token strin
 		}
 
 		log.Printf("Send email for Verify email, email=%s id=%s", u.Email, id)
-
 		return nil
 	}
 }

@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/microapis/email-api"
-	emailClient "github.com/microapis/email-api/client"
-	"github.com/microapis/users-api"
+	"github.com/cagodoy/ruvix-api/pkg/pigeon/email"
+	"github.com/cagodoy/ruvix-api/pkg/users"
 )
 
 // ForgotPasswordTemplate ...
-func ForgotPasswordTemplate(ec *emailClient.Client) func(u *users.User, token string) error {
+func ForgotPasswordTemplate(es *email.Service) func(u *users.User, token string) error {
 	return func(u *users.User, token string) error {
 		// define template intepolation values
 		fpt := ForgotPasswordValues{
@@ -24,11 +23,11 @@ func ForgotPasswordTemplate(ec *emailClient.Client) func(u *users.User, token st
 		str := ForgotPassword(fpt)
 
 		// send email with token and url
-		id, err := ec.Send(&email.Message{
+		id, err := es.Send(&email.Message{
 			From:     "no-reply@microapis.dev",
 			FromName: u.Name,
 			To:       []string{u.Email},
-			Subject:  fmt.Sprintf("[%s]: Instructions for changing your %s password", fpt.Company),
+			Subject:  fmt.Sprintf("[%s]: Instructions for changing your password", fpt.Company),
 			Text:     str,
 			Provider: "sendgrid",
 		}, 0)
