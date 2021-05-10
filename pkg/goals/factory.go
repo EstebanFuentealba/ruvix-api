@@ -1,13 +1,13 @@
 package goals
 
 import (
-	urulu "github.com/jmlopezz/uluru-api"
-	"github.com/jmlopezz/uluru-api/pkg/savings"
+	ruvixapi "github.com/cagodoy/ruvix-api"
+	"github.com/cagodoy/ruvix-api/pkg/savings"
 	uuid "github.com/satori/go.uuid"
 )
 
 // FactoryCreateGoal ...
-func FactoryCreateGoal(addr string, opts urulu.ClientOptions) (*Goal, *Goal, error) {
+func FactoryCreateGoal(addr string, opts ruvixapi.ClientOptions) (*Goal, *Goal, error) {
 	gc, err := NewClient(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -31,7 +31,7 @@ func FactoryCreateGoal(addr string, opts urulu.ClientOptions) (*Goal, *Goal, err
 }
 
 // FactoryListGoals ...
-func FactoryListGoals(addr string, opts urulu.ClientOptions) (*Goal, []*Goal, error) {
+func FactoryListGoals(addr string, opts ruvixapi.ClientOptions) (*Goal, []*Goal, error) {
 	_, before, err := FactoryCreateGoal(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -51,7 +51,7 @@ func FactoryListGoals(addr string, opts urulu.ClientOptions) (*Goal, []*Goal, er
 }
 
 // FactoryCreateRetirementGoal ...
-func FactoryCreateRetirementGoal(addr string, opts urulu.ClientOptions) (*RetirementGoal, *RetirementGoal, error) {
+func FactoryCreateRetirementGoal(addr string, opts ruvixapi.ClientOptions) (*RetirementGoal, *RetirementGoal, error) {
 	_, afterGoal, err := FactoryCreateGoal(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -66,7 +66,7 @@ func FactoryCreateRetirementGoal(addr string, opts urulu.ClientOptions) (*Retire
 		GoalID:        afterGoal.ID,
 		MonthlySalary: 1000.0,
 		RetirementInstruments: []*savings.RetirementInstrument{
-			&savings.RetirementInstrument{
+			{
 				InstrumentID:   afterInstitution.ID,
 				Percent:        0.1,
 				QuotasQuantity: 89.82,
@@ -74,7 +74,7 @@ func FactoryCreateRetirementGoal(addr string, opts urulu.ClientOptions) (*Retire
 				QuotasDate:     "22/04/2020",
 				Balance:        3553831,
 			},
-			&savings.RetirementInstrument{
+			{
 				InstrumentID:   afterInstitution.ID,
 				Percent:        0.9,
 				QuotasQuantity: 31.82,
@@ -99,7 +99,7 @@ func FactoryCreateRetirementGoal(addr string, opts urulu.ClientOptions) (*Retire
 }
 
 // FactoryGetLastRetirementGoal ...
-func FactoryGetLastRetirementGoal(addr string, opts urulu.ClientOptions) (*RetirementGoal, *RetirementGoal, error) {
+func FactoryGetLastRetirementGoal(addr string, opts ruvixapi.ClientOptions) (*RetirementGoal, *RetirementGoal, error) {
 	_, before, err := FactoryCreateRetirementGoal(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -119,7 +119,7 @@ func FactoryGetLastRetirementGoal(addr string, opts urulu.ClientOptions) (*Retir
 }
 
 // FactoryCreateGuestRetirementGoal ...
-func FactoryCreateGuestRetirementGoal(addr string, opts urulu.ClientOptions) (*RetirementGoal, *RetirementGoal, error) {
+func FactoryCreateGuestRetirementGoal(addr string, opts ruvixapi.ClientOptions) (*RetirementGoal, *RetirementGoal, error) {
 	_, afterGoal, err := FactoryCreateGoal(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -135,7 +135,7 @@ func FactoryCreateGuestRetirementGoal(addr string, opts urulu.ClientOptions) (*R
 		MonthlySalary: 1000.0,
 		Fingerprint:   "12345",
 		RetirementInstruments: []*savings.RetirementInstrument{
-			&savings.RetirementInstrument{
+			{
 				InstrumentID:   afterInstitution.ID,
 				Percent:        0.1,
 				QuotasQuantity: 89.82,
@@ -143,7 +143,7 @@ func FactoryCreateGuestRetirementGoal(addr string, opts urulu.ClientOptions) (*R
 				QuotasDate:     "22/04/2020",
 				Balance:        3553831,
 			},
-			&savings.RetirementInstrument{
+			{
 				InstrumentID:   afterInstitution.ID,
 				Percent:        0.9,
 				QuotasQuantity: 31.82,
@@ -168,7 +168,7 @@ func FactoryCreateGuestRetirementGoal(addr string, opts urulu.ClientOptions) (*R
 }
 
 // FactoryGetLastGuestRetirementGoal ...
-func FactoryGetLastGuestRetirementGoal(addr string, opts urulu.ClientOptions) (*RetirementGoal, *RetirementGoal, error) {
+func FactoryGetLastGuestRetirementGoal(addr string, opts ruvixapi.ClientOptions) (*RetirementGoal, *RetirementGoal, error) {
 	_, before, err := FactoryCreateGuestRetirementGoal(addr, opts)
 	if err != nil {
 		return nil, nil, err

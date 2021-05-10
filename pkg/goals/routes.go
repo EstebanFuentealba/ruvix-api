@@ -3,23 +3,22 @@ package goals
 import (
 	"net/http"
 
+	"github.com/cagodoy/ruvix-api/internal/util"
+	"github.com/cagodoy/ruvix-api/pkg/auth"
 	"github.com/gorilla/mux"
-	"github.com/jmlopezz/afp-simulator/simulator"
-	"github.com/jmlopezz/uluru-api/internal/util"
-	authclient "github.com/microapis/authentication-api/client"
 )
 
 type handlerContext struct {
 	GoalStore GoalStore
-	Simulator simulator.Afp
+	// Simulator simulator.Afp
 }
 
 // Routes ...
-func Routes(r *mux.Router, ac *authclient.Client, gs GoalStore) {
+func Routes(r *mux.Router, as auth.Service, gs GoalStore) {
 	// define context
 	ctx := &handlerContext{
 		GoalStore: gs,
-		Simulator: simulator.New(),
+		// Simulator: simulator.New(),
 	}
 
 	//
@@ -47,7 +46,7 @@ func Routes(r *mux.Router, ac *authclient.Client, gs GoalStore) {
 	// ADMIN ROUTES
 	//
 	a := r.PathPrefix("/api/v1/goals").Subrouter()
-	a.Use(util.ValidateJWTWithRole(ac, "admin"))
+	a.Use(util.ValidateJWTWithRole(as, "admin"))
 	// POST /api/v1/goals
 	a.HandleFunc("", createGoal(ctx)).Methods(http.MethodPost, http.MethodOptions)
 
@@ -55,7 +54,7 @@ func Routes(r *mux.Router, ac *authclient.Client, gs GoalStore) {
 	// USER ROUTES
 	//
 	u := r.PathPrefix("/api/v1/goals").Subrouter()
-	u.Use(util.ValidateJWTWithRole(ac, "user"))
+	u.Use(util.ValidateJWTWithRole(as, "user"))
 	// GET /api/v1/goals/retirements
 	u.HandleFunc("/retirements/last", getLastRetirement(ctx)).Methods(http.MethodGet, http.MethodOptions)
 	// POST /api/v1/goals/retirements

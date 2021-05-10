@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
+	"github.com/cagodoy/ruvix-api/internal/database"
+	"github.com/cagodoy/ruvix-api/pkg/savings"
 	"github.com/jinzhu/gorm"
-	"github.com/jmlopezz/uluru-api/internal/database"
-	"github.com/jmlopezz/uluru-api/pkg/savings"
 	uuid "github.com/satori/go.uuid"
 )
 

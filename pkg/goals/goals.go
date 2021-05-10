@@ -1,6 +1,6 @@
 package goals
 
-import "github.com/jmlopezz/uluru-api/pkg/savings"
+import "github.com/cagodoy/ruvix-api/pkg/savings"
 
 // Goal define goal
 type Goal struct {
