@@ -1,19 +1,13 @@
 package util
 
 import (
-	auth "github.com/microapis/authentication-api"
-	authclient "github.com/microapis/authentication-api/client"
-	"github.com/microapis/users-api"
+	"github.com/cagodoy/ruvix-api/pkg/auth"
+	"github.com/cagodoy/ruvix-api/pkg/users"
 	uuid "github.com/satori/go.uuid"
 )
 
 // FactoryNewAuth ...
-func FactoryNewAuth(authAddr string) (*auth.Response, error) {
-	ac, err := authclient.New(authAddr)
-	if err != nil {
-		return nil, err
-	}
-
+func FactoryNewAuth(as auth.Service) (*auth.Response, error) {
 	randomUUID, err := uuid.NewV4()
 	if err != nil {
 		return nil, err
@@ -26,12 +20,12 @@ func FactoryNewAuth(authAddr string) (*auth.Response, error) {
 		Name:     "fake_name",
 	}
 
-	_, err = ac.Signup(u)
+	_, err = as.Signup(u)
 	if err != nil {
 		return nil, err
 	}
 
-	user, err := ac.Login(u.Email, u.Password)
+	user, err := as.Login(u.Email, u.Password)
 	if err != nil {
 		return nil, err
 	}
