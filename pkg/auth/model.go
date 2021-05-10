@@ -1,10 +1,9 @@
-package AuthModel
+package auth
 
 import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	auth "github.com/microapis/authentication-api"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -28,8 +27,8 @@ func (AuthModel) TableName() string {
 }
 
 // To ...
-func (am *AuthModel) To() *auth.Auth {
-	return &auth.Auth{
+func (am *AuthModel) To() *Auth {
+	return &Auth{
 		ID: am.ID.String(),
 
 		UserID:    am.UserID,
@@ -43,7 +42,7 @@ func (am *AuthModel) To() *auth.Auth {
 }
 
 // From ...
-func (am *AuthModel) From(a *auth.Auth) error {
+func (am *AuthModel) From(a *Auth) error {
 	if a.ID != "" {
 		id, err := uuid.FromString(a.ID)
 		if err != nil {
