@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"time"
 
-	uluru "github.com/jmlopezz/uluru-api"
+	ruvixapi "github.com/cagodoy/ruvix-api"
 )
 
 const (
@@ -25,7 +25,7 @@ type Client struct {
 }
 
 // NewClient ...
-func NewClient(address string, opts uluru.ClientOptions) (*Client, error) {
+func NewClient(address string, opts ruvixapi.ClientOptions) (*Client, error) {
 	// TODO(ca): check on authorization if token is valid
 	t := opts.Token
 

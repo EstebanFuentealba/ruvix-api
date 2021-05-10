@@ -3,9 +3,9 @@ package savings
 import (
 	"net/http"
 
+	"github.com/cagodoy/ruvix-api/internal/util"
+	"github.com/cagodoy/ruvix-api/pkg/auth"
 	"github.com/gorilla/mux"
-	"github.com/jmlopezz/uluru-api/internal/util"
-	authclient "github.com/microapis/authentication-api/client"
 )
 
 type handlerContext struct {
@@ -13,7 +13,7 @@ type handlerContext struct {
 }
 
 // Routes ...
-func Routes(r *mux.Router, ac *authclient.Client, is InstitutionStore) {
+func Routes(r *mux.Router, as auth.Service, is InstitutionStore) {
 	// define context
 	ctx := &handlerContext{
 		InstitutionStore: is,
@@ -30,7 +30,7 @@ func Routes(r *mux.Router, ac *authclient.Client, is InstitutionStore) {
 	// ADMIN ROUTES
 	//
 	u := r.PathPrefix("/api/v1/savings").Subrouter()
-	u.Use(util.ValidateJWTWithRole(ac, "admin"))
+	u.Use(util.ValidateJWTWithRole(as, "admin"))
 	// POST /api/v1/savings/institutions
 	u.HandleFunc("/institutions", createInstitution(ctx)).Methods(http.MethodPost, http.MethodOptions)
 }

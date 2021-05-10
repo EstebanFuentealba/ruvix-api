@@ -4,12 +4,12 @@ import (
 	"math/rand"
 	"strconv"
 
-	uluru "github.com/jmlopezz/uluru-api"
+	ruvixapi "github.com/cagodoy/ruvix-api"
 	uuid "github.com/satori/go.uuid"
 )
 
 // FactoryCreateInstitution ...
-func FactoryCreateInstitution(addr string, options uluru.ClientOptions) (*Institution, *Institution, error) {
+func FactoryCreateInstitution(addr string, options ruvixapi.ClientOptions) (*Institution, *Institution, error) {
 	sc, err := NewClient(addr, options)
 	if err != nil {
 		return nil, nil, err
@@ -34,7 +34,7 @@ func FactoryCreateInstitution(addr string, options uluru.ClientOptions) (*Instit
 }
 
 // FactoryCreateInstitutionWithAccounts ...
-func FactoryCreateInstitutionWithAccounts(addr string, options uluru.ClientOptions) (*Institution, *Institution, error) {
+func FactoryCreateInstitutionWithAccounts(addr string, options ruvixapi.ClientOptions) (*Institution, *Institution, error) {
 	sc, err := NewClient(addr, options)
 	if err != nil {
 		return nil, nil, err
@@ -65,7 +65,7 @@ func FactoryCreateInstitutionWithAccounts(addr string, options uluru.ClientOptio
 }
 
 // FactoryCreateInstitutionWithAccountsAndInstruments ...
-func FactoryCreateInstitutionWithAccountsAndInstruments(addr string, options uluru.ClientOptions) (*Institution, *Institution, error) {
+func FactoryCreateInstitutionWithAccountsAndInstruments(addr string, options ruvixapi.ClientOptions) (*Institution, *Institution, error) {
 	sc, err := NewClient(addr, options)
 	if err != nil {
 		return nil, nil, err
@@ -109,7 +109,7 @@ func FactoryCreateInstitutionWithAccountsAndInstruments(addr string, options ulu
 }
 
 // FactoryListInstitutions ...
-func FactoryListInstitutions(addr string, options uluru.ClientOptions) (*Institution, []*Institution, error) {
+func FactoryListInstitutions(addr string, options ruvixapi.ClientOptions) (*Institution, []*Institution, error) {
 	sc, err := NewClient(addr, options)
 	if err != nil {
 		return nil, nil, err

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/jmlopezz/uluru-api"
+	ruvixapi "github.com/cagodoy/ruvix-api"
 )
 
 func listInstitutions(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
@@ -15,12 +15,12 @@ func listInstitutions(ctx *handlerContext) func(w http.ResponseWriter, r *http.R
 		institutions, err := ctx.InstitutionStore.ListInstitutions()
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[SavingInstitutions][List][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: institutions,
 		}
 
@@ -29,7 +29,7 @@ func listInstitutions(ctx *handlerContext) func(w http.ResponseWriter, r *http.R
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[SavingInstitutions][List][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -48,7 +48,7 @@ func createInstitution(ctx *handlerContext) func(w http.ResponseWriter, r *http.
 
 		if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
 			fmt.Println(fmt.Sprintf("[SavingInstitutions][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -56,7 +56,7 @@ func createInstitution(ctx *handlerContext) func(w http.ResponseWriter, r *http.
 		if payload.Institution == nil {
 			err := "undefined institution"
 			fmt.Println(fmt.Sprintf("[SavingInstitutions][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -64,7 +64,7 @@ func createInstitution(ctx *handlerContext) func(w http.ResponseWriter, r *http.
 		if payload.Institution.Name == "" || payload.Institution.Slug == "" {
 			err := "undefined name or slug"
 			fmt.Println(fmt.Sprintf("[SavingInstitutions][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -74,12 +74,12 @@ func createInstitution(ctx *handlerContext) func(w http.ResponseWriter, r *http.
 		out, err := ctx.InstitutionStore.CreateInstitution(payload.Institution)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[SavingInstitutions][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: out,
 		}
 
@@ -88,7 +88,7 @@ func createInstitution(ctx *handlerContext) func(w http.ResponseWriter, r *http.
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[SavingInstitutions][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
