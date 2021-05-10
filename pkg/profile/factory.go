@@ -3,11 +3,11 @@ package profile
 import (
 	"time"
 
-	uluru "github.com/jmlopezz/uluru-api"
+	ruvixapi "github.com/cagodoy/ruvix-api"
 )
 
 // FactoryCreate ...
-func FactoryCreate(addr string, options uluru.ClientOptions) (*Profile, *Profile, error) {
+func FactoryCreate(addr string, options ruvixapi.ClientOptions) (*Profile, *Profile, error) {
 	pc, err := NewClient(addr, options)
 	if err != nil {
 		return nil, nil, err
@@ -31,7 +31,7 @@ func FactoryCreate(addr string, options uluru.ClientOptions) (*Profile, *Profile
 }
 
 // FactoryGet ...
-func FactoryGet(addr string, options uluru.ClientOptions) (*Profile, *Profile, error) {
+func FactoryGet(addr string, options ruvixapi.ClientOptions) (*Profile, *Profile, error) {
 	pc, err := NewClient(addr, options)
 	if err != nil {
 		return nil, nil, err
@@ -60,7 +60,7 @@ func FactoryGet(addr string, options uluru.ClientOptions) (*Profile, *Profile, e
 }
 
 // FactoryUpdate ...
-func FactoryUpdate(addr string, options uluru.ClientOptions) (*Profile, *Profile, error) {
+func FactoryUpdate(addr string, options ruvixapi.ClientOptions) (*Profile, *Profile, error) {
 	pc, err := NewClient(addr, options)
 	if err != nil {
 		return nil, nil, err

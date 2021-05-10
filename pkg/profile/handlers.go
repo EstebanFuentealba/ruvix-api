@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
+	ruvixapi "github.com/cagodoy/ruvix-api"
 	"github.com/gorilla/context"
-	"github.com/jmlopezz/uluru-api"
 )
 
 type createProfilePayload struct {
@@ -21,7 +21,7 @@ func createProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		if userID == "" {
 			err := "userID is not defined"
 			fmt.Println(fmt.Sprintf("[Profile][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -29,7 +29,7 @@ func createProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		payload := &createProfilePayload{}
 		if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
 			fmt.Println(fmt.Sprintf("[Profile][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -37,7 +37,7 @@ func createProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		if payload.Profile == nil {
 			err := "payload.Profile is undefined"
 			fmt.Println(fmt.Sprintf("[Profile][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -45,7 +45,7 @@ func createProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		if payload.Profile.Age == 0 && payload.Profile.Birth == 0 && payload.Profile.MaritalStatus == "" && payload.Profile.Gender == "" {
 			err := "not age, birth or marital_status to change"
 			fmt.Println(fmt.Sprintf("[Profile][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -59,12 +59,12 @@ func createProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		profile, err := ctx.Store.Create(payload.Profile)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Profile][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: profile,
 		}
 
@@ -73,7 +73,7 @@ func createProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[Profile][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -88,7 +88,7 @@ func getProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request
 		if userID == "" {
 			err := "userID is not defined"
 			fmt.Println(fmt.Sprintf("[Profile][Get][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -98,12 +98,12 @@ func getProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request
 		})
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Profile][Get][Errors] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: profile,
 		}
 
@@ -112,7 +112,7 @@ func getProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[Profile][Get][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -131,7 +131,7 @@ func updateProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		if userID == "" {
 			err := "userID is not defined"
 			fmt.Println(fmt.Sprintf("[Profile][Update][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -139,7 +139,7 @@ func updateProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		payload := &updateProfilePayload{}
 		if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
 			fmt.Println(fmt.Sprintf("[Profile][Update][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -151,14 +151,14 @@ func updateProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		})
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Profile][Update][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
 		if profile.UserID != userID {
 			fmt.Println(fmt.Sprintf("[Profile][Update][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusForbidden)
 			return
 		}
@@ -166,14 +166,14 @@ func updateProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		if payload.Profile == nil {
 			err := "payload.Profile is undefined"
 			fmt.Println(fmt.Sprintf("[Profile][Update][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
 		if payload.Profile.Age == 0 && payload.Profile.Birth == 0 && payload.Profile.Childs == 0 && payload.Profile.MaritalStatus == "" && payload.Profile.Gender == "" {
 			fmt.Println(fmt.Sprintf("[Profile][Update][Error] %v", "not age, birth, childs or marital_status to change"))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -199,12 +199,12 @@ func updateProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		p, err := ctx.Store.Update(profile)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Profile][Put][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: p,
 		}
 
@@ -213,7 +213,7 @@ func updateProfile(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[Profile][Put][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
