@@ -62,7 +62,7 @@ dev:
 
 stop: 
 	@echo "[stop] Stopping docker compose..."
-	@docker-compose -f src/infrastructure/docker/docker-compose.yml down || true
+	@docker-compose -f docker-compose.yml down || true
 
 docker: 
 	@echo "[docker] Login to docker..."
