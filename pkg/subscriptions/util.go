@@ -7,11 +7,11 @@ import (
 	"os"
 	"strconv"
 
+	ruvixapi "github.com/cagodoy/ruvix-api"
+	"github.com/cagodoy/ruvix-api/pkg/subscriptions/provider/transbank"
+	"github.com/cagodoy/ruvix-api/pkg/subscriptions/provider/transbank/webpay"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
-	"github.com/jmlopezz/uluru-api"
-	"github.com/microapis/transbank-sdk-golang"
-	"github.com/microapis/transbank-sdk-golang/pkg/webpay"
 )
 
 // TODO: the following values should read from ENV values
@@ -36,7 +36,7 @@ func GetSubscriptionIDParam() func(next http.Handler) http.Handler {
 			if subscriptionID == "" {
 				err := "forbidden"
 				fmt.Println(fmt.Sprintf("[Subscriptions][Error] %v", err))
-				b, _ := json.Marshal(uluru.Response{Error: err})
+				b, _ := json.Marshal(ruvixapi.Response{Error: err})
 				http.Error(w, string(b), http.StatusForbidden)
 				return
 			}
@@ -59,7 +59,7 @@ func GetTransactionIDParam() func(next http.Handler) http.Handler {
 			if transactionID == "" {
 				err := "forbidden"
 				fmt.Println(fmt.Sprintf("[Subscriptions][Error] %v", err))
-				b, _ := json.Marshal(uluru.Response{Error: err})
+				b, _ := json.Marshal(ruvixapi.Response{Error: err})
 				http.Error(w, string(b), http.StatusForbidden)
 				return
 			}

@@ -3,11 +3,11 @@ package subscriptions
 import (
 	"time"
 
-	urulu "github.com/jmlopezz/uluru-api"
+	ruvixapi "github.com/cagodoy/ruvix-api"
 )
 
 // FactoryCreatePaySubscription ...
-func FactoryCreatePaySubscription(addr string, opts urulu.ClientOptions) (*Subscription, *Subscription, error) {
+func FactoryCreatePaySubscription(addr string, opts ruvixapi.ClientOptions) (*Subscription, *Subscription, error) {
 	before := &Subscription{
 		Features: []*Feature{
 			&Feature{
@@ -39,7 +39,7 @@ func FactoryCreatePaySubscription(addr string, opts urulu.ClientOptions) (*Subsc
 }
 
 // FactoryCreateFreeSubscription ...
-func FactoryCreateFreeSubscription(addr string, opts urulu.ClientOptions) (*Subscription, *Subscription, error) {
+func FactoryCreateFreeSubscription(addr string, opts ruvixapi.ClientOptions) (*Subscription, *Subscription, error) {
 	before := &Subscription{
 		Features: []*Feature{
 			&Feature{
@@ -71,7 +71,7 @@ func FactoryCreateFreeSubscription(addr string, opts urulu.ClientOptions) (*Subs
 }
 
 // FactoryListSubscriptions ...
-func FactoryListSubscriptions(addr string, opts urulu.ClientOptions) (*Subscription, []*Subscription, error) {
+func FactoryListSubscriptions(addr string, opts ruvixapi.ClientOptions) (*Subscription, []*Subscription, error) {
 	_, before, err := FactoryCreatePaySubscription(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -91,7 +91,7 @@ func FactoryListSubscriptions(addr string, opts urulu.ClientOptions) (*Subscript
 }
 
 // FactoryListProviders ...
-func FactoryListProviders(addr string, opts urulu.ClientOptions) ([]*Provider, error) {
+func FactoryListProviders(addr string, opts ruvixapi.ClientOptions) ([]*Provider, error) {
 	gs, err := NewClient(addr, opts)
 	if err != nil {
 		return nil, err
@@ -106,7 +106,7 @@ func FactoryListProviders(addr string, opts urulu.ClientOptions) ([]*Provider, e
 }
 
 // FactoryFreeSubscribe ...
-func FactoryFreeSubscribe(addr string, opts urulu.ClientOptions) (*Subscription, *Transaction, error) {
+func FactoryFreeSubscribe(addr string, opts ruvixapi.ClientOptions) (*Subscription, *Transaction, error) {
 	_, before, err := FactoryCreateFreeSubscription(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -126,7 +126,7 @@ func FactoryFreeSubscribe(addr string, opts urulu.ClientOptions) (*Subscription,
 }
 
 // FactoryPaySubscribe ...
-func FactoryPaySubscribe(addr string, opts urulu.ClientOptions) (*Subscription, *Transaction, error) {
+func FactoryPaySubscribe(addr string, opts ruvixapi.ClientOptions) (*Subscription, *Transaction, error) {
 	_, before, err := FactoryCreatePaySubscription(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -146,7 +146,7 @@ func FactoryPaySubscribe(addr string, opts urulu.ClientOptions) (*Subscription, 
 }
 
 // FactoryPayUnsubscribe ...
-func FactoryPayUnsubscribe(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+func FactoryPayUnsubscribe(addr string, opts ruvixapi.ClientOptions) (*Transaction, *Transaction, error) {
 	beforeSubscription, before, err := FactoryPaySubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -168,7 +168,7 @@ func FactoryPayUnsubscribe(addr string, opts urulu.ClientOptions) (*Transaction,
 }
 
 // FactoryFreeUnsubscribe ...
-func FactoryFreeUnsubscribe(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+func FactoryFreeUnsubscribe(addr string, opts ruvixapi.ClientOptions) (*Transaction, *Transaction, error) {
 	beforeSubscription, before, err := FactoryFreeSubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -190,7 +190,7 @@ func FactoryFreeUnsubscribe(addr string, opts urulu.ClientOptions) (*Transaction
 }
 
 // FactoryPayRefresh ...
-func FactoryPayRefresh(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+func FactoryPayRefresh(addr string, opts ruvixapi.ClientOptions) (*Transaction, *Transaction, error) {
 	beforeSubscription, before, err := FactoryPaySubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -210,7 +210,7 @@ func FactoryPayRefresh(addr string, opts urulu.ClientOptions) (*Transaction, *Tr
 }
 
 // FactoryFreeRefresh ...
-func FactoryFreeRefresh(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+func FactoryFreeRefresh(addr string, opts ruvixapi.ClientOptions) (*Transaction, *Transaction, error) {
 	beforeSubscription, before, err := FactoryFreeSubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -230,7 +230,7 @@ func FactoryFreeRefresh(addr string, opts urulu.ClientOptions) (*Transaction, *T
 }
 
 // FactoryPayVerify ...
-func FactoryPayVerify(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+func FactoryPayVerify(addr string, opts ruvixapi.ClientOptions) (*Transaction, *Transaction, error) {
 	beforeSubscription, before, err := FactoryPaySubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -250,7 +250,7 @@ func FactoryPayVerify(addr string, opts urulu.ClientOptions) (*Transaction, *Tra
 }
 
 // FactoryFreeVerify ...
-func FactoryFreeVerify(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+func FactoryFreeVerify(addr string, opts ruvixapi.ClientOptions) (*Transaction, *Transaction, error) {
 	beforeSubscription, before, err := FactoryFreeSubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -270,7 +270,7 @@ func FactoryFreeVerify(addr string, opts urulu.ClientOptions) (*Transaction, *Tr
 }
 
 // ListTransactions ...
-func ListTransactions(addr string, opts urulu.ClientOptions) (*Transaction, []*Transaction, error) {
+func ListTransactions(addr string, opts ruvixapi.ClientOptions) (*Transaction, []*Transaction, error) {
 	_, before, err := FactoryPaySubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
@@ -290,7 +290,7 @@ func ListTransactions(addr string, opts urulu.ClientOptions) (*Transaction, []*T
 }
 
 // LastTransaction ...
-func LastTransaction(addr string, opts urulu.ClientOptions) (*Transaction, *Transaction, error) {
+func LastTransaction(addr string, opts ruvixapi.ClientOptions) (*Transaction, *Transaction, error) {
 	_, before, err := FactoryPaySubscribe(addr, opts)
 	if err != nil {
 		return nil, nil, err
