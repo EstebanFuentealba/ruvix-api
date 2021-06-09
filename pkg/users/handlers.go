@@ -50,7 +50,8 @@ func getUser(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		user, err := ctx.UserService.GetByID(userID)
 		if err != nil {
 			fmt.Printf("[HTTP][Users][Get][Error] %v\n", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			b, _ := json.Marshal(Response{Error: err.Error()})
+			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
@@ -85,7 +86,7 @@ func createUser(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request
 		}
 
 		if payload.User == nil {
-			err := "undefined user"
+			err := "invalid user"
 			fmt.Printf("[HTTP][Users][Create][Error] %v\n", err)
 			b, _ := json.Marshal(Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
@@ -93,7 +94,7 @@ func createUser(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request
 		}
 
 		if payload.User.Email == "" || payload.User.Name == "" || payload.User.Password == "" {
-			err := "undefined email, name or password"
+			err := "invalid email, name or password"
 			fmt.Printf("[HTTP][Users][Create][Error] %v\n", err)
 			b, _ := json.Marshal(Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)

@@ -8,9 +8,9 @@ import (
 
 // HTTPResponse ...
 type HTTPResponse struct {
-	Data  interface{} `json:"data,omitempty"`
+	Data  interface{} `json:"data,omitempty"` // {}
 	Meta  interface{} `json:"meta,omitempty"`
-	Error interface{} `json:"error,omitempty"`
+	Error interface{} `json:"error,omitempty"` // {"error": "invalid email, name or password"}
 }
 
 type handlerContext struct {

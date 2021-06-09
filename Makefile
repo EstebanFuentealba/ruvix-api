@@ -39,15 +39,15 @@ GOPATH=$(HOME)/go
 #
 # GENERAL
 #
-clean c:
+clean:
 	@echo "[clean] Cleaning bin folder..."
 	@rm -rf bin/
 
-run r: 
+run: 
 	@echo "[running] Running service..."
 	@go run cmd/$(SVC)/main.go
 
-build b: proto
+build:
 	@echo "[build] Building service..."
 	@GOOS=linux GOARCH=amd64 go build -o $(BIN)-v$(VERSION)-linux cmd/$(SVC)/main.go
 	
@@ -57,7 +57,7 @@ build b: proto
 dev:
 	@echo "[run-dev] Running docker compose..."
 	@docker-compose -f docker-compose.yml up -d --build
-	@echo "[run-dev] running service in debug mode..."
+	@echo "[run-dev] running service in dev mode..."
 	@go run cmd/$(SVC)/main.go
 
 stop: 
@@ -97,9 +97,7 @@ test-users tu:
 	@echo "[test] Testing Users..."
 	@echo "=========================="
 	@echo ""
-	@HOST=$(USERS_HOST) \
-	 PORT=$(USERS_PORT) \
-	 go test -count=1 -v $(GOPATH)/src/github.com/cagodoy/ruvix-api/client/users_test.go
+	@go test -count=1 -v ./pkg/users/*_test.go
 
 test-authentication ta:
 	@echo ""

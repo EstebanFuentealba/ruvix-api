@@ -10,13 +10,13 @@ import (
 func FactoryCreatePaySubscription(addr string, opts ruvixapi.ClientOptions) (*Subscription, *Subscription, error) {
 	before := &Subscription{
 		Features: []*Feature{
-			&Feature{
+			{
 				Text: "example feature 1",
 			},
-			&Feature{
+			{
 				Text: "example feature 2",
 			},
-			&Feature{
+			{
 				Text: "example feature 3",
 			},
 		},
@@ -42,13 +42,13 @@ func FactoryCreatePaySubscription(addr string, opts ruvixapi.ClientOptions) (*Su
 func FactoryCreateFreeSubscription(addr string, opts ruvixapi.ClientOptions) (*Subscription, *Subscription, error) {
 	before := &Subscription{
 		Features: []*Feature{
-			&Feature{
+			{
 				Text: "example feature 1",
 			},
-			&Feature{
+			{
 				Text: "example feature 2",
 			},
-			&Feature{
+			{
 				Text: "example feature 3",
 			},
 		},

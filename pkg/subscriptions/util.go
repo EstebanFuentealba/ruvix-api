@@ -35,7 +35,7 @@ func GetSubscriptionIDParam() func(next http.Handler) http.Handler {
 			subscriptionID := vars["subscription_id"]
 			if subscriptionID == "" {
 				err := "forbidden"
-				fmt.Println(fmt.Sprintf("[Subscriptions][Error] %v", err))
+				fmt.Printf("[Subscriptions][Error] %v\n", err)
 				b, _ := json.Marshal(ruvixapi.Response{Error: err})
 				http.Error(w, string(b), http.StatusForbidden)
 				return
@@ -58,7 +58,7 @@ func GetTransactionIDParam() func(next http.Handler) http.Handler {
 			transactionID := vars["transaction_id"]
 			if transactionID == "" {
 				err := "forbidden"
-				fmt.Println(fmt.Sprintf("[Subscriptions][Error] %v", err))
+				fmt.Printf("[Subscriptions][Error] %v\n", err)
 				b, _ := json.Marshal(ruvixapi.Response{Error: err})
 				http.Error(w, string(b), http.StatusForbidden)
 				return

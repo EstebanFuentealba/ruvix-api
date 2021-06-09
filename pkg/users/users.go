@@ -6,7 +6,7 @@ import (
 
 // User ...
 type User struct {
-	ID string `json:"id" db:"id"`
+	ID string `json:"id,omitempty" db:"id"`
 
 	Email    string `json:"email,omitempty" db:"email"`
 	Name     string `json:"name,omitempty" db:"name"`
@@ -15,7 +15,7 @@ type User struct {
 
 	CreatedAt time.Time  `json:"created_at,omitempty" db:"created_at"`
 	UpdatedAt time.Time  `json:"updated_at,omitempty" db:"updated_at"`
-	DeletedAt *time.Time `json:"-,omitempty" db:"deleted_at"`
+	DeletedAt *time.Time `json:"deleted_at" db:"deleted_at"`
 }
 
 // Service ...

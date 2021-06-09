@@ -125,7 +125,7 @@ func (ss *subscriptionStoreDB) Subscribe(q QueryTransaction) (*Transaction, erro
 		if lastTransaction.ProviderID == q.ProviderID && lastTransaction.ProviderID == ProviderFree {
 			// its same with last transaction
 			if lastTransaction.SubscriptionID == q.SubscriptionID && lastTransaction.ProviderID == q.ProviderID {
-				err := errors.New("new transaction ​​are the same as the last transaction")
+				err := errors.New("new transaccion are the same as the last transaction")
 				return nil, err
 			}
 		}
