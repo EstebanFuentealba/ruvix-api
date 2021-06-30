@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"net/http"
 
+	ruvixapi "github.com/cagodoy/ruvix-api"
+	auth "github.com/cagodoy/ruvix-api/pkg/auth"
 	"github.com/gorilla/context"
-	"github.com/jmlopezz/uluru-api"
-	auth "github.com/microapis/authentication-api"
-	authclient "github.com/microapis/authentication-api/client"
 )
 
 // ValidateJWT ...
-func ValidateJWT(ac *authclient.Client) func(next http.Handler) http.Handler {
+func ValidateJWT(as auth.Service) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -21,17 +20,17 @@ func ValidateJWT(ac *authclient.Client) func(next http.Handler) http.Handler {
 			if token == "" {
 				err := "forbidden"
 				fmt.Println(fmt.Sprintf("[Auth][Error] %v", err))
-				b, _ := json.Marshal(uluru.Response{Error: err})
+				b, _ := json.Marshal(ruvixapi.Response{Error: err})
 				http.Error(w, string(b), http.StatusForbidden)
 				return
 			}
 
 			// check token if valid
-			t, err := ac.VerifyToken(token, auth.KindUser)
+			t, err := as.VerifyToken(token, auth.KindUser)
 			if err != nil {
 				err := "forbidden"
 				fmt.Println(fmt.Sprintf("[Auth][Error] %v", err))
-				b, _ := json.Marshal(uluru.Response{Error: err})
+				b, _ := json.Marshal(ruvixapi.Response{Error: err})
 				http.Error(w, string(b), http.StatusForbidden)
 				return
 			}
@@ -46,7 +45,7 @@ func ValidateJWT(ac *authclient.Client) func(next http.Handler) http.Handler {
 }
 
 // ValidateJWTWithRole ...
-func ValidateJWTWithRole(ac *authclient.Client, role string) func(next http.Handler) http.Handler {
+func ValidateJWTWithRole(as auth.Service, role string) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -55,17 +54,17 @@ func ValidateJWTWithRole(ac *authclient.Client, role string) func(next http.Hand
 			if token == "" {
 				err := "forbidden"
 				fmt.Println(fmt.Sprintf("[Auth][Error] %v", err))
-				b, _ := json.Marshal(uluru.Response{Error: err})
+				b, _ := json.Marshal(ruvixapi.Response{Error: err})
 				http.Error(w, string(b), http.StatusForbidden)
 				return
 			}
 
 			// check token if valid
-			t, err := ac.VerifyToken(token, auth.KindUser)
+			t, err := as.VerifyToken(token, auth.KindUser)
 			if err != nil {
 				err := "forbidden"
 				fmt.Println(fmt.Sprintf("[Auth][Error] %v", err))
-				b, _ := json.Marshal(uluru.Response{Error: err})
+				b, _ := json.Marshal(ruvixapi.Response{Error: err})
 				http.Error(w, string(b), http.StatusForbidden)
 				return
 			}

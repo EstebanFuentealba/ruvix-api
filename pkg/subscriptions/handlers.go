@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"strings"
 
+	ruvixapi "github.com/cagodoy/ruvix-api"
 	"github.com/gorilla/context"
-	"github.com/jmlopezz/uluru-api"
 )
 
 func listSubscriptions(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
@@ -20,12 +20,12 @@ func listSubscriptions(ctx *handlerContext) func(w http.ResponseWriter, r *http.
 		subscriptions, err := ctx.SubscriptionStore.ListSubscriptions()
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][List][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: subscriptions,
 		}
 
@@ -34,7 +34,7 @@ func listSubscriptions(ctx *handlerContext) func(w http.ResponseWriter, r *http.
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][List][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -48,12 +48,12 @@ func listProviders(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		providers, err := ctx.SubscriptionStore.ListProviders()
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[SubscriptionsProviders][List][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: providers,
 		}
 
@@ -62,7 +62,7 @@ func listProviders(ctx *handlerContext) func(w http.ResponseWriter, r *http.Requ
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[SubscriptionsProviders][List][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -76,7 +76,7 @@ func paymentWebhook(ctx *handlerContext) func(w http.ResponseWriter, r *http.Req
 		body, err := ioutil.ReadAll(r.Body)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][PaymentWebhook][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -99,7 +99,7 @@ func createSubscription(ctx *handlerContext) func(w http.ResponseWriter, r *http
 
 		if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -107,7 +107,7 @@ func createSubscription(ctx *handlerContext) func(w http.ResponseWriter, r *http
 		if payload.Subscription == nil {
 			err := "undefined subscription"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -115,7 +115,7 @@ func createSubscription(ctx *handlerContext) func(w http.ResponseWriter, r *http
 		if payload.Subscription.Name == "" {
 			err := "undefined name"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -123,7 +123,7 @@ func createSubscription(ctx *handlerContext) func(w http.ResponseWriter, r *http
 		if len(payload.Subscription.Features) == 0 {
 			err := "undefined features"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -133,12 +133,12 @@ func createSubscription(ctx *handlerContext) func(w http.ResponseWriter, r *http
 		out, err := ctx.SubscriptionStore.CreateSubscription(payload.Subscription)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: out,
 		}
 
@@ -147,7 +147,7 @@ func createSubscription(ctx *handlerContext) func(w http.ResponseWriter, r *http
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Create][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -162,7 +162,7 @@ func listTransactions(ctx *handlerContext) func(w http.ResponseWriter, r *http.R
 		if userID == "" {
 			err := "userID is not defined"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -172,12 +172,12 @@ func listTransactions(ctx *handlerContext) func(w http.ResponseWriter, r *http.R
 		})
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][List][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: transactions,
 		}
 
@@ -186,7 +186,7 @@ func listTransactions(ctx *handlerContext) func(w http.ResponseWriter, r *http.R
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][List][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -201,7 +201,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 		if userID == "" {
 			err := "userID is not defined"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -210,7 +210,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 		if subscriptionID == "" {
 			err := "subscriptionID is not defined"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -221,7 +221,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 
 		if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -229,7 +229,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 		if payload.Subscribe == nil {
 			err := "undefined subscribe"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -237,7 +237,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 		if payload.Subscribe.ProviderID == "" && !ValidProvider(payload.Subscribe.ProviderID) {
 			err := "undefined provider_id"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -252,7 +252,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 		})
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -261,7 +261,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 		token, err := PaymentToken(transaction)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -270,13 +270,13 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 		t, err := ctx.SubscriptionStore.UpdateTransaction(transaction)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
 		// prepare response
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: t,
 		}
 
@@ -291,7 +291,7 @@ func subscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request)
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Subscribe][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -306,7 +306,7 @@ func unsubscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Reques
 		if userID == "" {
 			err := "userID is not defined"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Unsubscribe][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -315,7 +315,7 @@ func unsubscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Reques
 		if subscriptionID == "" {
 			err := "subscriptionID is not defined"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -327,12 +327,12 @@ func unsubscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Reques
 		})
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Unsubscribe][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: data,
 		}
 
@@ -341,7 +341,7 @@ func unsubscribe(ctx *handlerContext) func(w http.ResponseWriter, r *http.Reques
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Unsubscribe][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -356,7 +356,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		if userID == "" {
 			err := "userID is not defined"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -365,7 +365,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		if subscriptionID == "" {
 			err := "subscriptionID is not defined"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -378,7 +378,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 
 		if err := json.NewDecoder(r.Body).Decode(payload); err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -386,7 +386,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		if payload.Refresh == nil {
 			err := "undefined refresh"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -394,7 +394,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		if payload.Refresh.ProviderID == "" && ValidProvider(payload.Refresh.ProviderID) {
 			err := "undefined provider_id"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -409,7 +409,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		})
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -418,7 +418,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		token, err := PaymentToken(transaction)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -427,13 +427,13 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		t, err := ctx.SubscriptionStore.UpdateTransaction(transaction)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
 		// prepare response
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: t,
 		}
 
@@ -448,7 +448,7 @@ func refresh(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Refresh][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -463,7 +463,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		if userID == "" {
 			err := "userID is not defined"
 			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -471,7 +471,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		lastTransaction, err := ctx.SubscriptionStore.LastTransaction(userID)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -479,7 +479,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		if lastTransaction.Status == StatusTransactionCompleted {
 			err := errors.New("transaction status already complete")
 			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -487,7 +487,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		if lastTransaction.ProviderID == ProviderFree {
 			err := fmt.Errorf("provider_id cannot be %s when subscription price is free", lastTransaction.ProviderID)
 			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -495,7 +495,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		if lastTransaction.PaymentToken == "" {
 			err := errors.New("undefined payment_token")
 			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -506,7 +506,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 			if strings.Contains(err.Error(), "rejected") {
 				lastTransaction.Status = StatusTransactionRejected
 			} else {
-				b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+				b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 				http.Error(w, string(b), http.StatusInternalServerError)
 				return
 			}
@@ -517,12 +517,12 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		transaction, err := ctx.SubscriptionStore.UpdateTransaction(lastTransaction)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error7] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: transaction,
 		}
 
@@ -531,7 +531,7 @@ func verify(ctx *handlerContext) func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[Subscriptions][Verify][Error8] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -546,7 +546,7 @@ func lastTransaction(ctx *handlerContext) func(w http.ResponseWriter, r *http.Re
 		if userID == "" {
 			err := "userID is not defined"
 			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][Last][Error] %v", err))
-			b, _ := json.Marshal(uluru.Response{Error: err})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
@@ -554,12 +554,12 @@ func lastTransaction(ctx *handlerContext) func(w http.ResponseWriter, r *http.Re
 		transaction, err := ctx.SubscriptionStore.LastTransaction(userID)
 		if err != nil {
 			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][Last][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}
 
-		res := uluru.Response{
+		res := ruvixapi.Response{
 			Data: transaction,
 		}
 
@@ -568,7 +568,7 @@ func lastTransaction(ctx *handlerContext) func(w http.ResponseWriter, r *http.Re
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(res); err != nil {
 			fmt.Println(fmt.Sprintf("[SubscriptionsTransactions][Last][Error] %v", err.Error()))
-			b, _ := json.Marshal(uluru.Response{Error: err.Error()})
+			b, _ := json.Marshal(ruvixapi.Response{Error: err.Error()})
 			http.Error(w, string(b), http.StatusInternalServerError)
 			return
 		}

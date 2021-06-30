@@ -3,22 +3,22 @@ package subscriptions
 import (
 	"net/http"
 
+	"github.com/cagodoy/ruvix-api/internal/util"
+	"github.com/cagodoy/ruvix-api/pkg/auth"
 	"github.com/gorilla/mux"
-	"github.com/jmlopezz/uluru-api/internal/util"
-	authclient "github.com/microapis/authentication-api/client"
 )
 
 type handlerContext struct {
 	SubscriptionStore SubscriptionStore
-	AuthClient        *authclient.Client
+	AuthService       auth.Service
 }
 
 // Routes ...
-func Routes(r *mux.Router, ac *authclient.Client, ss SubscriptionStore) {
+func Routes(r *mux.Router, as auth.Service, ss SubscriptionStore) {
 	// define context
 	ctx := &handlerContext{
 		SubscriptionStore: ss,
-		AuthClient:        ac,
+		AuthService:       as,
 	}
 
 	//
@@ -36,7 +36,7 @@ func Routes(r *mux.Router, ac *authclient.Client, ss SubscriptionStore) {
 	// ADMIN ROUTES
 	//
 	a := r.PathPrefix("/api/v1/subscriptions").Subrouter()
-	a.Use(util.ValidateJWTWithRole(ac, "admin"))
+	a.Use(util.ValidateJWTWithRole(as, "admin"))
 	// POST /api/v1/subscriptions
 	a.HandleFunc("", createSubscription(ctx)).Methods(http.MethodPost, http.MethodOptions)
 
@@ -44,7 +44,7 @@ func Routes(r *mux.Router, ac *authclient.Client, ss SubscriptionStore) {
 	// USER ROUTES
 	//
 	u1 := r.PathPrefix("/api/v1/subscriptions").Subrouter()
-	u1.Use(util.ValidateJWTWithRole(ac, "user"))
+	u1.Use(util.ValidateJWTWithRole(as, "user"))
 	// GET /api/v1/subscriptions/transactions
 	u1.HandleFunc("/transactions", listTransactions(ctx)).Methods(http.MethodGet, http.MethodOptions)
 	// GET /api/v1/subscriptions/transactions/last
@@ -55,7 +55,7 @@ func Routes(r *mux.Router, ac *authclient.Client, ss SubscriptionStore) {
 	// - subscription_id
 	//
 	u2 := r.PathPrefix("/api/v1/subscriptions").Subrouter()
-	u2.Use(util.ValidateJWTWithRole(ac, "user"))
+	u2.Use(util.ValidateJWTWithRole(as, "user"))
 	u2.Use(GetSubscriptionIDParam())
 	// POST /api/v1/subscriptions/:id/subscribe
 	u2.HandleFunc("/{subscription_id}/subscribe", subscribe(ctx)).Methods(http.MethodPost, http.MethodOptions)

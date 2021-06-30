@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/microapis/email-api"
-	emailClient "github.com/microapis/email-api/client"
-	"github.com/microapis/users-api"
+	"github.com/cagodoy/ruvix-api/pkg/pigeon/email"
+	"github.com/cagodoy/ruvix-api/pkg/users"
 )
 
 // PasswordChangedTemplate ...
-func PasswordChangedTemplate(ec *emailClient.Client) func(u *users.User) error {
+func PasswordChangedTemplate(es *email.Service) func(u *users.User) error {
 	return func(u *users.User) error {
 		// define template intepolation values
 		fpt := PasswordChangedValues{
@@ -22,7 +21,7 @@ func PasswordChangedTemplate(ec *emailClient.Client) func(u *users.User) error {
 		str := PasswordChanged(fpt)
 
 		// send email with url
-		id, err := ec.Send(&email.Message{
+		id, err := es.Send(&email.Message{
 			From:     "no-reply@microapis.dev",
 			FromName: fpt.Company,
 			To:       []string{u.Email},

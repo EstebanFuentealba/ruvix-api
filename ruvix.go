@@ -1,4 +1,4 @@
-package uluru
+package ruvixapi
 
 // Response ...
 type Response struct {

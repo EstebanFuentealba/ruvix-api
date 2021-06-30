@@ -1,8 +1,8 @@
 package goals
 
 import (
+	"github.com/cagodoy/ruvix-api/pkg/savings"
 	"github.com/jinzhu/gorm"
-	"github.com/jmlopezz/uluru-api/pkg/savings"
 )
 
 // GoalStore service definition

@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
-	"github.com/microapis/users-api"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -37,8 +36,8 @@ func (UserModel) TableName() string {
 }
 
 // To ...
-func (um *UserModel) To() *users.User {
-	u := &users.User{
+func (um *UserModel) To() *User {
+	u := &User{
 		ID: um.ID.String(),
 
 		Name:     um.Name,
@@ -53,7 +52,7 @@ func (um *UserModel) To() *users.User {
 }
 
 // From ...
-func (um *UserModel) From(u *users.User) error {
+func (um *UserModel) From(u *User) error {
 	if u.ID != "" {
 		id, err := uuid.FromString(u.ID)
 		if err != nil {

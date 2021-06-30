@@ -3,8 +3,8 @@ package profile
 import (
 	"time"
 
+	"github.com/cagodoy/ruvix-api/internal/database"
 	"github.com/jinzhu/gorm"
-	"github.com/jmlopezz/uluru-api/internal/database"
 	uuid "github.com/satori/go.uuid"
 )
 

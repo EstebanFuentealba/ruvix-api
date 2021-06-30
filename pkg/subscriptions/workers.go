@@ -1,8 +1,6 @@
 package subscriptions
 
 import (
-	// "log"
-
 	"log"
 
 	"github.com/robfig/cron"
